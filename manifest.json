@@ -1,0 +1,44 @@
+{
+  "manifest_version": 2,
+  "name": "WebLab",
+  "description": "Get paid for participating in scientific research as you browse the web",
+  "version": "1.0.0",
+  "permissions": [
+    "tabs",
+    "http://*/",
+    "https://*/"
+  ],
+  "background": {
+    "persistent": true,
+    "scripts": [
+      "bower_components/jquery/dist/jquery.min.js",
+      "bower_components/async/dist/async.min.js",
+      "bower_components/js-yaml/dist/js-yaml.min.js",
+      "memoize.js",
+      "background_common.js",
+      "background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*/*",
+        "http://*/*"
+      ],
+      "js": [
+        "content_script.js"
+      ]
+    }
+  ],
+  "browser_action": {
+    "default_icon": {
+      "19": "icon_19.png",
+      "38": "icon_38.png"
+    },
+    "default_popup": "popup.html"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
+  }
+}
