@@ -44,6 +44,10 @@ $(document).ready ->
     {hostname, path} = new URL("/aa/bb/", location)
     $('#sitename').text hostname
     possible_experiments <- list_available_experiments_for_location(location)
+    all_experiments <- get_experiments()
     console.log possible_experiments
+    for experiment_name in possible_experiments
+      experiment_info = all_experiments[experiment_name]
+      $('#experiment_list').append experiment_info.title
   #, 2000
   #chrome.extension.onMessage.add

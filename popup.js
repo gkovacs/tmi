@@ -44,7 +44,16 @@ sendBackground = (type, data, callback) ->
         ref$ = new URL("/aa/bb/", location), hostname = ref$.hostname, path = ref$.path;
         $('#sitename').text(hostname);
         return list_available_experiments_for_location(location, function(possible_experiments){
-          return console.log(possible_experiments);
+          return get_experiments(function(all_experiments){
+            var i$, ref$, len$, experiment_name, experiment_info, results$ = [];
+            console.log(possible_experiments);
+            for (i$ = 0, len$ = (ref$ = possible_experiments).length; i$ < len$; ++i$) {
+              experiment_name = ref$[i$];
+              experiment_info = all_experiments[experiment_name];
+              results$.push($('#experiment_list').append(experiment_info.title));
+            }
+            return results$;
+          });
         });
       });
     }();
