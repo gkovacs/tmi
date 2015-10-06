@@ -16,6 +16,7 @@ insert_css = (css_path, callback) ->
     callback()
 
 load_experiment = (experiment_name, callback) ->
+  console.log 'load_experiment ' + experiment_name
   all_experiments <- get_experiments()
   experiment_info = all_experiments[experiment_name]
   <- async.eachSeries experiment_info.scripts, (script_name, ncallback) ->
@@ -26,11 +27,15 @@ load_experiment = (experiment_name, callback) ->
     callback()
 
 load_experiment_for_location = (location, callback) ->
-  possible_experiments <- list_available_experiments_for_location()
+  possible_experiments <- list_available_experiments_for_location(location)
   console.log 'possible experiments are:'
   console.log possible_experiments
-  if possible_experiments.length > 0
-    load_experiment possible_experiments[0]
+  enabled_experiments = JSON.parse(localStorage.getItem('experiments')) ? []
+  console.log 'enabled experiments are:'
+  for x in enabled_experiments
+    if possible_experiments.indexOf(x) != -1
+      load_experiment x
+      break
 
 
 getLocation = (callback) ->
@@ -75,6 +80,12 @@ message_handlers = {
       if callback?
         callback()
 }
+
+chrome.tabs.onUpdated.addListener (tabId, changeInfo, tab) ->
+  if tab.url
+    possible_experiments <- list_available_experiments_for_location(tab.url)
+    if possible_experiments.length > 0
+      chrome.pageAction.show(tabId)
 
 chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
   {type, data} = request

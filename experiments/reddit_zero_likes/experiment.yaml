@@ -1,0 +1,5 @@
+title: Zero likes on all items
+matches:
+  - www.reddit.com
+scripts:
+  - index.js

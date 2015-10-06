@@ -30,6 +30,7 @@
     }
   };
   load_experiment = function(experiment_name, callback){
+    console.log('load_experiment ' + experiment_name);
     return get_experiments(function(all_experiments){
       var experiment_info;
       experiment_info = all_experiments[experiment_name];
@@ -47,12 +48,22 @@
     });
   };
   load_experiment_for_location = function(location, callback){
-    return list_available_experiments_for_location(function(possible_experiments){
+    return list_available_experiments_for_location(location, function(possible_experiments){
+      var enabled_experiments, ref$, i$, len$, x, results$ = [];
       console.log('possible experiments are:');
       console.log(possible_experiments);
-      if (possible_experiments.length > 0) {
-        return load_experiment(possible_experiments[0]);
+      enabled_experiments = (ref$ = JSON.parse(localStorage.getItem('experiments'))) != null
+        ? ref$
+        : [];
+      console.log('enabled experiments are:');
+      for (i$ = 0, len$ = enabled_experiments.length; i$ < len$; ++i$) {
+        x = enabled_experiments[i$];
+        if (possible_experiments.indexOf(x) !== -1) {
+          load_experiment(x);
+          break;
+        }
       }
+      return results$;
     });
   };
   getLocation = function(callback){
@@ -120,6 +131,15 @@
       });
     }
   };
+  chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
+    if (tab.url) {
+      return list_available_experiments_for_location(tab.url, function(possible_experiments){
+        if (possible_experiments.length > 0) {
+          return chrome.pageAction.show(tabId);
+        }
+      });
+    }
+  });
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     var type, data, message_handler;
     type = request.type, data = request.data;

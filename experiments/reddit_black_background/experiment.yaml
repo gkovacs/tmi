@@ -1,0 +1,5 @@
+title: Make Background Black
+matches:
+  - www.reddit.com
+scripts:
+  - index.js
