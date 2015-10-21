@@ -1,6 +1,7 @@
 main2 = ->
   console.log 'running main in facebook_birthdate'
-  infoboxes = document.querySelectorAll('._1zw6._md0._5vb9')
+  #infoboxes = document.querySelectorAll('._1zw6._md0._5vb9')
+  infoboxes <- once_available '._1zw6._md0._5vb9'
   console.log 'found infoboxes:' # need to keep repeating until non-empty
   console.log infoboxes
   for infobox in infoboxes

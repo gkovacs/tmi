@@ -2,25 +2,26 @@
 (function(){
   var main2, main1;
   main2 = function(){
-    var infoboxes, i$, len$, infobox, datastore_text, datastore, facebook_birthdate;
-    console.log('running main in facebook_birthdate');
-    infoboxes = document.querySelectorAll('._1zw6._md0._5vb9');
-    console.log('found infoboxes:');
-    console.log(infoboxes);
-    for (i$ = 0, len$ = infoboxes.length; i$ < len$; ++i$) {
-      infobox = infoboxes[i$];
-      datastore_text = infobox.getAttribute('data-store');
-      if (datastore_text == null) {
-        continue;
+    console.log('running main in facebook_occupation');
+    return once_available('._1zw6._md0._5vb9', function(infoboxes){
+      var i$, len$, infobox, datastore_text, datastore, facebook_occupation;
+      console.log('found infoboxes:');
+      console.log(infoboxes);
+      for (i$ = 0, len$ = infoboxes.length; i$ < len$; ++i$) {
+        infobox = infoboxes[i$];
+        datastore_text = infobox.getAttribute('data-store');
+        if (datastore_text == null) {
+          continue;
+        }
+        datastore = JSON.parse(datastore_text);
+        if (datastore['context_item_type_as_string'] === 'work') {
+          facebook_occupation = infobox.innerText;
+          console.log("setting facebook_occupation " + facebook_occupation);
+          setvar('facebook_occupation', facebook_occupation);
+          return;
+        }
       }
-      datastore = JSON.parse(datastore_text);
-      if (datastore['context_item_type_as_string'] === 'work') {
-        facebook_birthdate = infobox.innerText;
-        console.log("setting facebook_birthdate " + facebook_birthdate);
-        setvar('facebook_birthdate', facebook_birthdate);
-        return;
-      }
-    }
+    });
   };
   main1 = function(){
     console.log('running facebook_occupation');

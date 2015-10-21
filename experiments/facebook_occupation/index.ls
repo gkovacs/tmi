@@ -1,6 +1,7 @@
 main2 = ->
-  console.log 'running main in facebook_birthdate'
-  infoboxes = document.querySelectorAll('._1zw6._md0._5vb9')
+  console.log 'running main in facebook_occupation'
+  # infoboxes = document.querySelectorAll('._1zw6._md0._5vb9')
+  infoboxes <- once_available '._1zw6._md0._5vb9'
   console.log 'found infoboxes:' # need to keep repeating until non-empty
   console.log infoboxes
   for infobox in infoboxes
@@ -9,9 +10,9 @@ main2 = ->
       continue
     datastore = JSON.parse datastore_text
     if datastore['context_item_type_as_string'] == 'work'
-      facebook_birthdate = infobox.innerText
-      console.log "setting facebook_birthdate #{facebook_birthdate}"
-      setvar 'facebook_birthdate', facebook_birthdate
+      facebook_occupation = infobox.innerText
+      console.log "setting facebook_occupation #{facebook_occupation}"
+      setvar 'facebook_occupation', facebook_occupation
       return
 
 main1 = ->

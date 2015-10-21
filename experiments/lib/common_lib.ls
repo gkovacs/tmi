@@ -47,3 +47,13 @@ export onpageupdate = (callback) ->
     if req.event == 'pageupdate'
       console.log 'onpageupdate event being called'
       callback()
+
+export once_available = (selector, callback) ->
+  current_result = document.querySelectorAll(selector)
+  if current_result.length > 0
+    callback current_result
+  else
+    setTimeout ->
+      once_available selector, callback
+    , 1000
+
