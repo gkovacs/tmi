@@ -1,0 +1,7 @@
+title: Your Browsing Time by Site
+matches:
+  - ''
+scripts:
+  - /lib/underscore-min.js
+  - /lib/common_lib.js
+  - index.js

@@ -1,7 +1,0 @@
-title: Make Background Blue
-nomatches:
-  - calendar
-matches:
-  - www.google.com
-scripts:
-  - index.js

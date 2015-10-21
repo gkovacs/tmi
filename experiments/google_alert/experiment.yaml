@@ -1,7 +1,0 @@
-title: Display Alert When Visiting Google
-nomatches:
-  - calendar
-matches:
-  - www.google.com
-scripts:
-  - index.js

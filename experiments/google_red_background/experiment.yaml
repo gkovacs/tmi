@@ -1,7 +1,0 @@
-title: Make Background Red
-nomatches:
-  - calendar
-matches:
-  - www.google.com
-scripts:
-  - index.js

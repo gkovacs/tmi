@@ -1,0 +1,1 @@
+minimongo = require('minimongo')

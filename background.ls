@@ -1,12 +1,85 @@
 console.log 'weblab running in background'
 
-execute_content_script = (script_path, callback) ->
+export getDb = memoizeSingleAsync (callback) ->
+  new minimongo.IndexedDb {namespace: 'autosurvey'}, callback
+
+export getCollection = (collection_name, callback) ->
+  db <- getDb()
+  collection = db.collections[collection_name]
+  if collection?
+    callback collection
+    return
+  <- db.addCollection collection_name
+  callback db.collections[collection_name]
+
+export getVarsCollection = memoizeSingleAsync (callback) ->
+  getCollection 'vars', callback
+
+export getListsCollection = memoizeSingleAsync (callback) ->
+  getCollection 'lists', callback
+
+export setvar = (name, val, callback) ->
+  data <- getVarsCollection()
+  result <- data.upsert {_id: name, val: val}
+  if callback?
+    callback()
+
+export getvar = (name, callback) ->
+  data <- getVarsCollection()
+  result <- data.findOne {_id: name}
+  if result?
+    callback result.val
+    return
+  else
+    callback null
+    return
+  # if var is not set, return null instead
+
+export clearvar = (name, callback) ->
+  data <- getVarsCollection()
+  <- data.remove name
+  if callback?
+    callback()
+
+export printvar = (name) ->
+  result <- getvar name
+  console.log result
+
+export addtolist = (name, val, callback) ->
+  data <- getListsCollection()
+  result <- data.upsert {name: name, val: val}
+  if callback?
+    callback()
+
+export getlist = (name, callback) ->
+  data <- getListsCollection()
+  result <- data.find({name: name}).fetch()
+  callback [x.val for x in result]
+
+export clearlist = (name, callback) ->
+  data <- getListsCollection()
+  result <- data.find({name: name}).fetch()
+  <- async.eachSeries result, (item, ncallback) ->
+    <- data.remove item['_id']
+    ncallback()
+  if callback?
+    callback()
+
+export printlist = (name) ->
+  result <- getlist name
+  console.log result
+
+execute_content_script = (options, callback) ->
+  if not options.run_at?
+    options.run_at = 'document_start' # document_end
+  if not options.all_frames?
+    options.all_frames = false
   chrome.tabs.query {active: true, lastFocusedWindow: true}, (tabs) ->
     if tabs.length == 0
       if callback?
         callback()
       return
-    chrome.tabs.executeScript tabs[0].id, {file: script_path, allFrames: false, runAt: 'document_start'}, ->
+    chrome.tabs.executeScript tabs[0].id, {file: options.path, allFrames: options.all_frames, runAt: options.run_at}, ->
       if callback?
         callback()
 
@@ -19,8 +92,14 @@ load_experiment = (experiment_name, callback) ->
   console.log 'load_experiment ' + experiment_name
   all_experiments <- get_experiments()
   experiment_info = all_experiments[experiment_name]
-  <- async.eachSeries experiment_info.scripts, (script_name, ncallback) ->
-    execute_content_script "experiments/#{experiment_name}/#{script_name}", ncallback
+  <- async.eachSeries experiment_info.scripts, (options, ncallback) ->
+    if typeof options == 'string'
+      options = {path: options}
+    if options.path[0] == '/'
+      options.path = 'experiments' + options.path
+    else
+      options.path = "experiments/#{experiment_name}/#{options.path}"
+    execute_content_script options, ncallback
   <- async.eachSeries experiment_info.css, (css_name, ncallback) ->
     insert_css "experiments/#{experiment_name}/#{css_name}", ncallback
   if callback?
@@ -28,15 +107,10 @@ load_experiment = (experiment_name, callback) ->
 
 load_experiment_for_location = (location, callback) ->
   possible_experiments <- list_available_experiments_for_location(location)
-  console.log 'possible experiments are:'
-  console.log possible_experiments
-  enabled_experiments = JSON.parse(localStorage.getItem('experiments')) ? []
-  console.log 'enabled experiments are:'
-  for x in enabled_experiments
-    if possible_experiments.indexOf(x) != -1
-      load_experiment x
-      break
-
+  errors, results <- async.eachSeries possible_experiments, (experiment, ncallback) ->
+    load_experiment experiment, ncallback
+  if callback?
+    callback()
 
 getLocation = (callback) ->
   #sendTab 'getLocation', {}, callback
@@ -64,6 +138,27 @@ sendTab = (type, data, callback) ->
     chrome.tabs.sendMessage tabs[0].id, {type, data}, {}, callback
 
 message_handlers = {
+  'setvars': (data, callback) ->
+    <- async.forEachOfSeries data, (v, k, ncallback) ->
+      <- setvar k, v
+      ncallback()
+    if callback?
+      callback()
+  'getvar': (name, callback) ->
+    getvar name, callback
+  'getvars': (namelist, callback) ->
+    output = {}
+    <- async.eachSeries namelist, (name, ncallback) ->
+      val <- getvar name
+      output[name] = val
+      ncallback()
+    if callback?
+      callback output
+  'addtolist': (data, callback) ->
+    {list, item} = data
+    addtolist list, item, callback
+  'getlist': (name, callback) ->
+    getlist name, callback
   'getLocation': (data, callback) ->
     getLocation (location) ->
       console.log 'getLocation background page:'
@@ -81,11 +176,32 @@ message_handlers = {
         callback()
 }
 
-chrome.tabs.onUpdated.addListener (tabId, changeInfo, tab) ->
-  if tab.url
+send_pageupdate_to_tab = (tabId) ->
+  chrome.tabs.sendMessage tabId, {event: 'pageupdate'}
+
+onWebNav = (tab) ->
+  if tab.frameId == 0 # top-level frame
+    {tabId} = tab
     possible_experiments <- list_available_experiments_for_location(tab.url)
     if possible_experiments.length > 0
       chrome.pageAction.show(tabId)
+    console.log 'pageupdate sent to tab'
+    send_pageupdate_to_tab(tabId)
+
+chrome.webNavigation.onCommitted.addListener onWebNav
+chrome.webNavigation.onHistoryStateUpdated.addListener onWebNav
+
+/*
+chrome.tabs.onUpdated.addListener (tabId, changeInfo, tab) ->
+  if tab.url
+    #console.log 'tabs updated!'
+    #console.log tab.url
+    possible_experiments <- list_available_experiments_for_location(tab.url)
+    if possible_experiments.length > 0
+      chrome.pageAction.show(tabId)
+    send_pageupdate_to_tab(tabId)
+    # load_experiment_for_location tab.url
+*/
 
 chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
   {type, data} = request
@@ -94,8 +210,16 @@ chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
   message_handler = message_handlers[type]
   if not message_handler?
     return
+  tabId = sender.tab.id
   message_handler data, (response) ->
     console.log 'message handler response:'
     console.log response
-    sendResponse response
+    #response_data = {response}
+    #console.log response_data
+    # chrome bug - doesn't seem to actually send the response back....
+    #sendResponse response_data
+    #sendResponse response
+    {requestId} = request
+    if requestId? # response requested
+      chrome.tabs.sendMessage tabId, {event: 'backgroundresponse', requestId, response}
 

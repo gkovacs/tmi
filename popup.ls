@@ -1,86 +1,79 @@
-# note: it seems that we can send to background page, but the response callback is not called?
+export getDb = memoizeSingleAsync (callback) ->
+  new minimongo.IndexedDb {namespace: 'autosurvey'}, callback
 
-/*
-getLocation = (callback) ->
-  sendBackground 'getLocation', {}, (location) ->
-    console.log 'got location'
-    console.log location
+export getCollection = (collection_name, callback) ->
+  db <- getDb()
+  collection = db.collections[collection_name]
+  if collection?
+    callback collection
+    return
+  <- db.addCollection collection_name
+  callback db.collections[collection_name]
 
-sendBackground = (type, data, callback) ->
-  console.log 'sendBackground sent: '
-  console.log type
-  console.log data
-  chrome.runtime.sendMessage {type, data}, (response) ->
-    console.log 'got response!'
-    callback response
-*/
+export getVarsCollection = memoizeSingleAsync (callback) ->
+  getCollection 'vars', callback
 
-getLocation = (callback) ->
-  #sendTab 'getLocation', {}, callback
-  getTabInfo (tabinfo) ->
-    callback tabinfo.url
+export getListsCollection = memoizeSingleAsync (callback) ->
+  getCollection 'lists', callback
 
-getTabInfo = (callback) ->
-  chrome.tabs.query {active: true, lastFocusedWindow: true}, (tabs) ->
-    if tabs.length == 0
-      return
-    chrome.tabs.get tabs[0].id, callback
+export setvar = (name, val, callback) ->
+  data <- getVarsCollection()
+  result <- data.upsert {_id: name, val: val}
+  if callback?
+    callback()
 
-reloadTab = (callback) ->
-  chrome.tabs.query {active: true, lastFocusedWindow: true}, (tabs) ->
-    if tabs.length == 0
-      return
-    chrome.tabs.reload tabs[0].id, callback
+export getvar = (name, callback) ->
+  data <- getVarsCollection()
+  result <- data.findOne {_id: name}
+  if result?
+    callback result.val
+    return
+  else
+    callback null
+    return
+  # if var is not set, return null instead
+
+export clearvar = (name, callback) ->
+  data <- getVarsCollection()
+  <- data.remove name
+  if callback?
+    callback()
+
+export printvar = (name) ->
+  result <- getvar name
+  console.log result
+
+export addtolist = (name, val, callback) ->
+  data <- getListsCollection()
+  result <- data.upsert {name: name, val: val}
+  if callback?
+    callback()
+
+export getlist = (name, callback) ->
+  data <- getListsCollection()
+  result <- data.find({name: name}).fetch()
+  callback [x.val for x in result]
+
+export clearlist = (name, callback) ->
+  data <- getListsCollection()
+  result <- data.find({name: name}).fetch()
+  <- async.eachSeries result, (item, ncallback) ->
+    <- data.remove item['_id']
+    ncallback()
+  if callback?
+    callback()
+
+export printlist = (name) ->
+  result <- getlist name
+  console.log result
 
 $(document).ready ->
-  #alert 'hello world'
-  #alert window.location.href
-  #chrome.extension.onMessage.addListener (request, sender, sendResponse) ->
-  #setInterval ->
-  $('#open_options_page').click ->
-    chrome.runtime.openOptionsPage()
-  do ->
-    console.log 'message sent askdfjl!'
-    #$.get 'https://edufeed.cloudant.com/', (response) ->
-    #  console.log 'response received'
-    #  console.log response
-    location <- getLocation()
-    console.log 'received location'
-    console.log location
-    {hostname, path} = new URL("/aa/bb/", location)
-    $('#sitename').text hostname
-    possible_experiments <- list_available_experiments_for_location(location)
-    all_experiments <- get_experiments()
-    console.log possible_experiments
-    for let experiment_name in possible_experiments
-      experiment_info = all_experiments[experiment_name]
-      experiment_selector = $('<div>').css {'margin-bottom': '5px'}
-      experiment_selector.append $('<span>').text(experiment_info.title)
-      experiment_selector_button = $('<paper-button raised="raised" style="background: #4285f4; color: #fff">').text('Participate')
-      enabled_experiments = JSON.parse(localStorage.getItem('experiments')) ? []
-      experiment_enabled = enabled_experiments.indexOf(experiment_name) != -1
-      if experiment_enabled
-        experiment_selector_button.text('Leave Experiment')
-      if not experiment_enabled
-        experiment_selector_button.click ->
-          console.log 'activated experiment: ' + experiment_name
-          enabled_experiments = JSON.parse(localStorage.getItem('experiments')) ? []
-          enabled_experiments = enabled_experiments.filter (x) -> possible_experiments.indexOf(x) == -1
-          enabled_experiments.push experiment_name
-          localStorage.setItem 'experiments', JSON.stringify(enabled_experiments)
-          reloadTab()
-          window.location.reload()
-          #alert 'activated experiment: ' + experiment_name
-      else
-        experiment_selector_button.click ->
-          console.log 'left experiment: ' + experiment_name
-          enabled_experiments = JSON.parse(localStorage.getItem('experiments')) ? []
-          enabled_experiments = enabled_experiments.filter (x) -> possible_experiments.indexOf(x) == -1
-          localStorage.setItem 'experiments', JSON.stringify(enabled_experiments)
-          reloadTab()
-          window.location.reload()
-          #alert 'activated experiment: ' + experiment_name
-      experiment_selector_button.appendTo experiment_selector
-      experiment_selector.appendTo $('#experiment_list')
-  #, 2000
-  #chrome.extension.onMessage.add
+  facebook_name <- getvar 'facebook_name'
+  facebook_link <- getvar 'facebook_link'
+  facebook_birthdate <- getvar 'facebook_birthdate'
+  facebook_occupation <- getvar 'facebook_occupation'
+  $('#facebook_name').text facebook_name
+  $('#facebook_link').text facebook_link
+  $('#facebook_occupation').text facebook_occupation
+  $('#facebook_birthdate').text facebook_birthdate
+  console.log 'popup is getting rendered'

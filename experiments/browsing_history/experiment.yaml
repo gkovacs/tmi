@@ -1,0 +1,6 @@
+title: Your Browsing History
+matches:
+  - ''
+scripts:
+  - /lib/common_lib.js
+  - index.js
