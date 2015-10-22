@@ -8,7 +8,8 @@
       host: window.location.host,
       url: window.location.href,
       timestamp: Date.now(),
-      time: new Date().toString()
+      time: new Date().toString(),
+      interval: 5
     };
     console.log(item);
     return addtolist('browsing_time_by_site', item);

@@ -1,0 +1,34 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+
+<dom-module id="facebook-survey">
+  <style>
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <template>
+    <div style="display: table; margin-bottom: 10px; width: 100%">
+      <div style="display: inline-block; white-space: nowrap; text-align: left">
+        <paper-button raised style="background: #4285f4; color: #fff" on-click="view_data">View Data</paper-button>
+      </div>
+      <div style="display: inline-block; white-space: nowrap; text-align: left">
+        <paper-button raised style="background: #4285f4; color: #fff" on-click="send_data">Send Data</paper-button>
+      </div>
+      <div style="display: table-cell; white-space: nowrap; text-align: right">
+        <paper-button raised style="background: #4285f4; color: #fff" on-click="return_home">Return to Home</paper-button>
+      </div>
+    </div>
+    <div>
+      <auto-field field='facebook_name'></auto-field>
+      <auto-field field='facebook_link'></auto-field>
+      <auto-field field='facebook_location'></auto-field>
+      <auto-field field='facebook_hometown'></auto-field>
+      <auto-field field='facebook_birthdate'></auto-field>
+      <auto-field field='facebook_education'></auto-field>
+      <auto-field field='facebook_occupation'></auto-field>
+    </div>
+  </template>
+  <script src="facebook-survey.js"></script>
+</dom-module>

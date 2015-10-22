@@ -1,0 +1,8 @@
+vars:
+  - facebook_name
+  - facebook_link
+  - facebook_location
+  - facebook_hometown
+  - facebook_birthdate
+  - facebook_education
+  - facebook_occupation

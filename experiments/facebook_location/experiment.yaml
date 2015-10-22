@@ -1,0 +1,6 @@
+title: Your Facebook Location
+matches:
+  - 'facebook.com'
+scripts:
+  - /lib/common_lib.js
+  - index.js

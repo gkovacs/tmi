@@ -1,0 +1,27 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+
+<dom-module id="view-data">
+  <style>
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <template>
+    <div>
+      <div style="display: table; width: 100%">
+        <div style="display: table-cell; text-align: left">
+          <paper-button raised style="background: #4285f4; color: #fff" on-click="return_to_survey">Return to Survey Summary</paper-button>
+        </div>
+        <div style="display: table-cell; text-align: right">
+          <paper-button raised style="background: #4285f4; color: #fff" on-click="return_home">Return to Home</paper-button>
+        </div>
+      </div>
+      <pre id="results">
+        Survey results loading
+      </pre>
+    </div>
+  </template>
+  <script src="view-data.js"></script>
+</dom-module>

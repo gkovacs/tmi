@@ -4,7 +4,7 @@ console.log 'running browsing_time_by_site'
 
 mousemoved = ->
   #console.log 'mouse moved'
-  item = {host: window.location.host, url: window.location.href, timestamp: Date.now(), time: new Date().toString()}
+  item = {host: window.location.host, url: window.location.href, timestamp: Date.now(), time: new Date().toString(), interval: 5}
   console.log item
   addtolist 'browsing_time_by_site', item
 

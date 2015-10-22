@@ -1,6 +1,6 @@
 manifest_version: 2
-name: AutoSurvey
-description: Get paid and participate in scientific research as you browse the web
+name: BrowsingInsights
+description: Gain insights about your browsing activity and participate in scientific research
 version: '1.0.0'
 permissions:
   - tabs
@@ -32,4 +32,5 @@ page_action:
   default_popup: popup.html
 options_ui:
   page: options.html
-  chrome_style: true
+  chrome_style: false
+  open_in_tab: true
