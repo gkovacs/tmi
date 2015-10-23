@@ -1,28 +1,16 @@
 main2 = ->
-  console.log 'running main in facebook_education'
-  #infoboxes = document.querySelectorAll('._1zw6._md0._5vb9')
-  infoboxes <- once_available '._1zw6._md0._5vb9'
-  console.log 'found infoboxes:' # need to keep repeating until non-empty
-  console.log infoboxes
-  for infobox in infoboxes
-    datastore_text = infobox.getAttribute('data-store')
-    if not datastore_text?
-      continue
-    datastore = JSON.parse datastore_text
-    if datastore['context_item_type_as_string'] == 'education'
-      facebook_education = infobox.innerText
-      console.log "setting facebook_education #{facebook_education}"
-      setvar 'facebook_education', facebook_education
-      return
+  fieldname = 'facebook_education'
+  infobox_text <- get_infobox_text [
+    infobox_item_type_matches('education')
+    infobox_contains_child('.sx_9b5d5b')
+  ]
+  if not infobox_text?
+    console.log "no matching infoboxes found for #{fieldname}"
+    return
+  setvar fieldname, infobox_text
 
 main1 = ->
-  console.log 'running facebook_education'
-  console.log "window.location.href is #{window.location.href}"
-  getvar 'facebook_link', (facebook_link) ->
-    console.log "facebook_link is #{facebook_link}"
-    if facebook_link? and facebook_link.length > 0
-      if window.location.href.indexOf(facebook_link) > -1
-        main2()
+  call_if_on_facebook_profile main2
 
 main1()
 onpageupdate main1

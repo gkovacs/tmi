@@ -119,3 +119,28 @@ export printlist = (name) ->
   result <- getlist name
   console.log result
 
+export clear_all_lists = (callback) ->
+  data <- getListsCollection()
+  result <- data.find({}).fetch()
+  <- async.eachSeries result, (item, ncallback) ->
+    <- data.remove item['_id']
+    ncallback()
+  if callback?
+    callback()
+
+export clear_all_vars = (callback) ->
+  data <- getVarsCollection()
+  result <- data.find({}).fetch()
+  <- async.eachSeries result, (item, ncallback) ->
+    <- data.remove item['_id']
+    ncallback()
+  if callback?
+    callback()
+
+export clear_all = (callback) ->
+  <- async.series [
+    clear_all_vars
+    clear_all_lists
+  ]
+  if callback?
+    callback()

@@ -57,3 +57,6 @@ export once_available = (selector, callback) ->
       once_available selector, callback
     , 1000
 
+# need this because NodeList does not have filter method
+export filter_list = (func, list) ->
+  return [x for x in list when func(x)]

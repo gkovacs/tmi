@@ -2,38 +2,18 @@
 (function(){
   var main2, main1;
   main2 = function(){
-    console.log('running main in facebook_birthdate');
-    return once_available('._1zw6._md0._5vb9', function(infoboxes){
-      var i$, len$, infobox, datastore_text, datastore, facebook_birthdate;
-      console.log('found infoboxes:');
-      console.log(infoboxes);
-      for (i$ = 0, len$ = infoboxes.length; i$ < len$; ++i$) {
-        infobox = infoboxes[i$];
-        datastore_text = infobox.getAttribute('data-store');
-        if (datastore_text == null) {
-          continue;
-        }
-        datastore = JSON.parse(datastore_text);
-        if (datastore['context_item_type_as_string'] === 'born') {
-          facebook_birthdate = infobox.innerText;
-          console.log("setting facebook_birthdate " + facebook_birthdate);
-          setvar('facebook_birthdate', facebook_birthdate);
-          return;
-        }
+    var fieldname;
+    fieldname = 'facebook_birthdate';
+    return get_infobox_text([infobox_item_type_matches('born'), infobox_contains_child('.sx_75ca87')], function(infobox_text){
+      if (infobox_text == null) {
+        console.log("no matching infoboxes found for " + fieldname);
+        return;
       }
+      return setvar(fieldname, infobox_text);
     });
   };
   main1 = function(){
-    console.log('running facebook_birthdate');
-    console.log("window.location.href is " + window.location.href);
-    return getvar('facebook_link', function(facebook_link){
-      console.log("facebook_link is " + facebook_link);
-      if (facebook_link != null && facebook_link.length > 0) {
-        if (window.location.href.indexOf(facebook_link) > -1) {
-          return main2();
-        }
-      }
-    });
+    return call_if_on_facebook_profile(main2);
   };
   main1();
   onpageupdate(main1);

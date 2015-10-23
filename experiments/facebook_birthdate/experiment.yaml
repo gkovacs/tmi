@@ -3,4 +3,5 @@ matches:
   - 'facebook.com'
 scripts:
   - /lib/common_lib.js
+  - /lib/facebook_profile_lib.js
   - index.js
