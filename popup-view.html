@@ -1,7 +1,6 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
-<link rel="import" href="exp-description.html">
 
-<dom-module id="intro-page">
+<dom-module id="popup-view">
   <style>
     :host {
       display: block;
@@ -11,14 +10,6 @@
   </style>
   <template>
     <div>
-      <div>
-      <!-- How addicted are you to email and social networks? How much do you slack off online? How stereotypical are your online interests? Install our extension to gain insights such as these about your digital life. -->
-      Which of these facts about your digital life would you like to learn about? (Check the ones you are interested in)
-      </div>
-      <br><br>
-      <!--
-      <div id="experiment_list"></div>
-      -->
       <template is="dom-repeat" items="{{experiment_list}}" as="experiment">
         <exp-description title="{{experiment.title}}" description="{{experiment.description}}"></exp-description>
         <br>
@@ -37,7 +28,14 @@
         </div>
       </div>
       -->
+      <!--
+      <auto-field field='facebook_name'></auto-field>
+      <auto-field field='facebook_link'></auto-field>
+      <auto-field field='facebook_birthdate'></auto-field>
+      <auto-field field='facebook_occupation'></auto-field>
+      <a href="slacking.html" target="_blank">Click here to open the slacking experiment</a>
+      -->
     </div>
   </template>
-  <script src="intro-page.js"></script>
+  <script src="popup-view.js"></script>
 </dom-module>

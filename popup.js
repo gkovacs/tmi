@@ -10,7 +10,7 @@
       if (survey != null) {
         tagname = survey + '-survey';
       } else {
-        tagname = 'experiment-view';
+        tagname = 'popup-view';
       }
     }
     tag = $("<" + tagname + ">");

@@ -1,0 +1,23 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
+
+<dom-module id="exp-description">
+  <style>
+    :host {
+      display: block;
+      width: 100%;
+    }
+  </style>
+  <template>
+    <div>
+      <paper-checkbox style="font-size: 20px">
+        <span>{{title}}</span>
+      </paper-checkbox>
+      <div style="margin-left: 30px">
+        <span style="font-size:16px">(0 users participating)</span>
+        <div style="font-size: 12px">{{description}}</div> <span style="font-size: 12px; color: blue"> (details)</span>
+      </div>
+    </div>
+  </template>
+  <script src="exp-description.js"></script>
+</dom-module>

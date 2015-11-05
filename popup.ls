@@ -6,7 +6,7 @@ startPage = ->
     if survey?
       tagname = survey + '-survey'
     else
-      tagname = 'experiment-view'
+      tagname = 'popup-view'
   tag = $("<#{tagname}>")
   for k,v of params
     if k == 'tag'

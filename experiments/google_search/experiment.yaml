@@ -1,0 +1,6 @@
+title: Your Google Searches
+matches:
+  - 'google.com'
+scripts:
+  - /lib/common_lib.js
+  - index.js
