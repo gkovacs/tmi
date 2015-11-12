@@ -8,28 +8,27 @@ if self_link.length == 1
 */
 (function(){
   var main;
-  console.log('running google_search');
+  console.log('running bing_search');
   main = function(){
-    var hash, raw_query, query, item;
+    var params, query, item;
     console.log('running main in google_search');
-    if (window.location.host !== 'www.google.com') {
-      console.log('not on www.google.com');
+    if (window.location.host !== 'www.bing.com') {
+      console.log('not on www.bing.com');
       console.log('host location is:');
       console.log(window.location.host);
       return;
     }
-    hash = window.location.hash;
-    if (hash.indexOf('#q=') !== -1) {
-      raw_query = hash.substring(3);
-      query = QueryString.decode(raw_query);
-      item = {
-        query: query,
-        timestamp: Date.now(),
-        time: new Date().toString()
-      };
-      console.log(item);
-      return addtolist('google_history', item);
+    params = getUrlParameters();
+    query = params.q;
+    if (query == null) {
+      return;
     }
+    item = {
+      query: query,
+      timestamp: Date.now(),
+      time: new Date().toString()
+    };
+    return addtolist('bing_history', item);
   };
   main();
   /*
@@ -46,6 +45,5 @@ if self_link.length == 1
     console.log 'interval is working for google_search'
   , 5000
   */
-  onpageupdate(main);
-  onhashchanged(main);
+  onlocationchanged(main);
 }).call(this);

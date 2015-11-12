@@ -1,0 +1,25 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+
+<dom-module id="json-list">
+  <style>
+    :host {
+      display: block;
+      width: 100%;
+    }
+  </style>
+  <template>
+    <div style="width: 100%">
+      <!--
+      <div style="display: table">
+        <div style="display: table-cell" id="field_description"></div>
+        <div style="display: table-cell" id="field_value"></div>
+      </div>
+      -->
+      <span id="field_description">{{field}}</span>
+      <template is="dom-repeat" items="{{json_lines}}" as="line">
+        <div>{{prettyprint(line)}}</div>
+      </template>
+    </div>
+  </template>
+  <script src="json-list.js"></script>
+</dom-module>

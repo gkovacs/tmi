@@ -1,6 +1,6 @@
-title: Your Google Searches
+title: Your Bing Searches
 matches:
-  - 'google.com'
+  - 'bing.com'
 scripts:
   - /lib/common_lib.js
   - /lib/querystring.js

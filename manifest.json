@@ -1,6 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "BrowsingInsights",
+  "name": "TMI",
+  "short_name": "tmi",
   "description": "Gain insights about your browsing activity and participate in scientific research",
   "version": "1.0.1",
   "permissions": [
@@ -33,7 +34,7 @@
       ]
     }
   ],
-  "page_action": {
+  "browser_action": {
     "default_icon": {
       "19": "icon_19.png",
       "38": "icon_38.png"

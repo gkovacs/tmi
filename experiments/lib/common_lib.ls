@@ -48,6 +48,24 @@ export onpageupdate = (callback) ->
       console.log 'onpageupdate event being called'
       callback()
 
+prev_hash = ''
+export onhashchanged = (callback) ->
+  setInterval ->
+    new_hash = window.location.hash
+    if new_hash != prev_hash
+      callback(new_hash, prev_hash)
+      prev_hash := new_hash
+  , 2000
+
+prev_location = ''
+export onlocationchanged = (callback) ->
+  setInterval ->
+    new_location = window.location.href
+    if new_location != prev_location
+      callback(new_location, prev_location)
+      prev_location := new_location
+  , 2000
+
 export once_available = (selector, callback) ->
   current_result = document.querySelectorAll(selector)
   if current_result.length > 0
@@ -60,3 +78,15 @@ export once_available = (selector, callback) ->
 # need this because NodeList does not have filter method
 export filter_list = (func, list) ->
   return [x for x in list when func(x)]
+
+export getUrlParameters = ->
+  url = window.location.href
+  hash = url.lastIndexOf('#')
+  if hash != -1
+    url = url.slice(0, hash)
+  map = {}
+  parts = url.replace(/[?&]+([^=&]+)=([^&]*)/gi, (m,key,value) ->
+    #map[key] = decodeURI(value).split('+').join(' ').split('%2C').join(',') # for whatever reason this seems necessary?
+    map[key] = decodeURIComponent(value).split('+').join(' ') # for whatever reason this seems necessary?
+  )
+  return map

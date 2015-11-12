@@ -7,6 +7,10 @@ Polymer {
     open_survey 'slacking'
   open_facebook_survey: ->
     open_survey 'facebook'
+  open_google_survey: ->
+    open_survey 'google'
+  open_bing_survey: ->
+    open_survey 'bing'
   #  this.fire 'open-survey', 
   ready: ->
     self = this

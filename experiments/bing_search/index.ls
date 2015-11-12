@@ -9,7 +9,7 @@ if self_link.length == 1
 
 #birthdate_icon = document.querySelectorAll('.img.sp_R5jvPQ7MPiF.sx_b7b338')
 
-console.log 'running google_search'
+console.log 'running bing_search'
 
 #chrome.runtime.onMessage.addListener (req, sender, callback) ->
 #  if req.event == 'pageupdate'
@@ -17,21 +17,17 @@ console.log 'running google_search'
 
 main = ->
   console.log 'running main in google_search'
-  if window.location.host != 'www.google.com'
-    console.log 'not on www.google.com'
+  if window.location.host != 'www.bing.com'
+    console.log 'not on www.bing.com'
     console.log 'host location is:'
     console.log window.location.host
     return
-  hash = window.location.hash
-  if hash.indexOf('#q=') != -1
-    raw_query = hash.substring(3)
-    query = QueryString.decode(raw_query)
-    item = {query: query, timestamp: Date.now(), time: new Date().toString()}
-    console.log item
-    addtolist 'google_history', item
-  #item = {host: window.location.host, url: window.location.href, timestamp: Date.now(), time: new Date().toString()}
-  #console.log item
-  #addtolist 'browsing_history', item
+  params = getUrlParameters()
+  query = params.q
+  if not query?
+    return
+  item = {query: query, timestamp: Date.now(), time: new Date().toString()}
+  addtolist 'bing_history', item
 
 main()
 /*
@@ -48,7 +44,8 @@ setInterval ->
   console.log 'interval is working for google_search'
 , 5000
 */
-onpageupdate main
-onhashchanged main
+#onpageupdate main
+#onhashchanged main
+onlocationchanged main
 
 

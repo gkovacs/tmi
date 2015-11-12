@@ -29,7 +29,7 @@
     return open_page(survey_name + '-survey');
   };
   out$.return_home = return_home = function(){
-    return open_page('experiment-view');
+    return open_page('popup-view');
   };
   out$.view_data = view_data = function(survey_name){
     return open_page('view-data', {

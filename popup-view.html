@@ -10,11 +10,7 @@
   </style>
   <template>
     <div>
-      <template is="dom-repeat" items="{{experiment_list}}" as="experiment">
-        <exp-description title="{{experiment.title}}" description="{{experiment.description}}"></exp-description>
-        <br>
-      </template>
-      <!--
+
       <div style="display: table; width: 100%; margin-bottom: 10px">
         <div style="text-align: left; display: table-cell">Where do you spend your time online?</div>
         <div style="display: table-cell; text-align: right">
@@ -27,7 +23,26 @@
           <paper-button raised style="background: #4285f4; color: #fff" on-click="open_facebook_survey">View Results</paper-button>
         </div>
       </div>
-      -->
+      <div style="display: table; width: 100%; margin-bottom: 10px">
+        <div style="text-align: left; display: table-cell">Google searches</div>
+        <div style="display: table-cell; text-align: right">
+          <paper-button raised style="background: #4285f4; color: #fff" on-click="open_google_survey">View Results</paper-button>
+        </div>
+      </div>
+      <div style="display: table; width: 100%; margin-bottom: 10px">
+        <div style="text-align: left; display: table-cell">Bing searches</div>
+        <div style="display: table-cell; text-align: right">
+          <paper-button raised style="background: #4285f4; color: #fff" on-click="open_bing_survey">View Results</paper-button>
+        </div>
+      </div>
+
+
+      <br>
+      <br>
+      <template is="dom-repeat" items="{{experiment_list}}" as="experiment">
+        <exp-description title="{{experiment.title}}" description="{{experiment.description}}"></exp-description>
+        <br>
+      </template>
       <!--
       <auto-field field='facebook_name'></auto-field>
       <auto-field field='facebook_link'></auto-field>

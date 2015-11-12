@@ -11,6 +11,12 @@
     open_facebook_survey: function(){
       return open_survey('facebook');
     },
+    open_google_survey: function(){
+      return open_survey('google');
+    },
+    open_bing_survey: function(){
+      return open_survey('bing');
+    },
     ready: function(){
       var self;
       self = this;
