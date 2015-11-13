@@ -4,6 +4,7 @@ require! {
   'gulp-util'
   'gulp-print'
   'gulp-livescript'
+  'gulp-cr-lf-replace'
 }
 
 lspattern = ['*.ls', 'experiments/**/*.ls']
@@ -13,6 +14,7 @@ gulp.task 'livescript', ->
   .pipe(gulp-livescript({bare: false}))
   .on('error', gulp-util.log)
   .pipe(gulp-print({colors: false}))
+  .pipe(gulp-cr-lf-replace({changeCode: 'LF'}))
   .pipe(gulp.dest('.'))
   return
 

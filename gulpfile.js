@@ -1,10 +1,11 @@
 (function(){
-  var gulp, gulpChanged, gulpUtil, gulpPrint, gulpLivescript, lspattern;
+  var gulp, gulpChanged, gulpUtil, gulpPrint, gulpLivescript, gulpCrLfReplace, lspattern;
   gulp = require('gulp');
   gulpChanged = require('gulp-changed');
   gulpUtil = require('gulp-util');
   gulpPrint = require('gulp-print');
   gulpLivescript = require('gulp-livescript');
+  gulpCrLfReplace = require('gulp-cr-lf-replace');
   lspattern = ['*.ls', 'experiments/**/*.ls'];
   gulp.task('livescript', function(){
     gulp.src(lspattern, {
@@ -15,6 +16,8 @@
       bare: false
     })).on('error', gulpUtil.log).pipe(gulpPrint({
       colors: false
+    })).pipe(gulpCrLfReplace({
+      changeCode: 'LF'
     })).pipe(gulp.dest('.'));
   });
   gulp.task('build', ['livescript']);
