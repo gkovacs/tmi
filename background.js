@@ -1,5 +1,5 @@
 (function(){
-  var execute_content_script, insert_css, load_experiment, load_experiment_for_location, getLocation, getTabInfo, sendTab, message_handlers, send_pageupdate_to_tab, onWebNav;
+  var execute_content_script, insert_css, load_experiment, load_experiment_for_location, getLocation, getTabInfo, sendTab, message_handlers, ext_message_handlers, confirm_permissions, send_pageupdate_to_tab, onWebNav;
   console.log('weblab running in background');
   execute_content_script = function(options, callback){
     if (options.run_at == null) {
@@ -118,10 +118,14 @@
           return ncallback();
         });
       }, function(){
-        if (callback != null) {
-          return callback();
-        }
+        return callback();
       });
+    },
+    'getfield': function(name, callback){
+      return getfield(name, callback);
+    },
+    'getfields': function(namelist, callback){
+      return getfields(namelist, callback);
     },
     'getvar': function(name, callback){
       return getvar(name, callback);
@@ -135,9 +139,7 @@
           return ncallback();
         });
       }, function(){
-        if (callback != null) {
-          return callback(output);
-        }
+        return callback(output);
       });
     },
     'addtolist': function(data, callback){
@@ -159,20 +161,29 @@
       var experiment_name;
       experiment_name = data.experiment_name;
       return load_experiment(experiment_name, function(){
-        if (callback != null) {
-          return callback();
-        }
+        return callback();
       });
     },
     'load_experiment_for_location': function(data, callback){
       var location;
       location = data.location;
       return load_experiment_for_location(location, function(){
-        if (callback != null) {
-          return callback();
-        }
+        return callback();
       });
     }
+  };
+  ext_message_handlers = {
+    'getfields': function(namelist, callback){
+      return confirm_permissions(namelist, function(accepted){
+        if (!accepted) {
+          return;
+        }
+        return getfields(namelist, callback);
+      });
+    }
+  };
+  confirm_permissions = function(namelist, callback){
+    return sendTab('confirm_permissions', namelist, callback);
   };
   send_pageupdate_to_tab = function(tabId){
     return chrome.tabs.sendMessage(tabId, {
@@ -184,9 +195,6 @@
     if (tab.frameId === 0) {
       tabId = tab.tabId;
       return list_available_experiments_for_location(tab.url, function(possible_experiments){
-        if (possible_experiments.length > 0) {
-          chrome.pageAction.show(tabId);
-        }
         console.log('pageupdate sent to tab');
         return send_pageupdate_to_tab(tabId);
       });
@@ -205,8 +213,27 @@
       send_pageupdate_to_tab(tabId)
       # load_experiment_for_location tab.url
   */
+  chrome.runtime.onMessageExternal.addListener(function(request, sender, sendResponse){
+    var type, data, message_handler, tabId, this$ = this;
+    console.log('onMessageExternal');
+    console.log(request);
+    type = request.type, data = request.data;
+    console.log(type);
+    console.log(data);
+    message_handler = ext_message_handlers[type];
+    if (message_handler == null) {
+      return;
+    }
+    tabId = sender.tab.id;
+    message_handler(data, function(response){
+      if (sendResponse != null) {
+        return sendResponse(response);
+      }
+    });
+    return true;
+  });
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-    var type, data, message_handler, tabId;
+    var type, data, message_handler;
     type = request.type, data = request.data;
     console.log(type);
     console.log(data);
@@ -214,19 +241,13 @@
     if (message_handler == null) {
       return;
     }
-    tabId = sender.tab.id;
-    return message_handler(data, function(response){
-      var requestId;
+    message_handler(data, function(response){
       console.log('message handler response:');
       console.log(response);
-      requestId = request.requestId;
-      if (requestId != null) {
-        return chrome.tabs.sendMessage(tabId, {
-          event: 'backgroundresponse',
-          requestId: requestId,
-          response: response
-        });
+      if (sendResponse != null) {
+        return sendResponse(response);
       }
     });
+    return true;
   });
 }).call(this);

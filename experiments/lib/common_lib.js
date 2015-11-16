@@ -1,33 +1,42 @@
+/*
+pending_requests = {} # requestId -> callback
+
+# listen to responses from the background thread
+chrome.runtime.onMessage.addListener (req, sender, callback) ->
+  if req.event == 'backgroundresponse'
+    {requestId, response} = req
+    matching_callback = pending_requests[requestId]
+    if matching_callback?
+      delete pending_requests[requestId]
+      matching_callback(response)
+
+sendmsg = (type, data, callback) ->
+  if not callback?
+    chrome.runtime.sendMessage {
+      type
+      data
+    }
+    return
+  requestId = Math.floor(Math.random()*9999999).toString()
+  pending_requests[requestId] = callback
+  chrome.runtime.sendMessage {
+    type
+    data
+    requestId
+  } #, callback
+*/
 (function(){
-  var pending_requests, sendmsg, setvar, setvars, getvar, getvars, addtolist, onpageupdate, prev_hash, onhashchanged, prev_location, onlocationchanged, once_available, filter_list, getUrlParameters, out$ = typeof exports != 'undefined' && exports || this;
-  pending_requests = {};
-  chrome.runtime.onMessage.addListener(function(req, sender, callback){
-    var requestId, response, matching_callback;
-    if (req.event === 'backgroundresponse') {
-      requestId = req.requestId, response = req.response;
-      matching_callback = pending_requests[requestId];
-      if (matching_callback != null) {
-        delete pending_requests[requestId];
-        return matching_callback(response);
-      }
-    }
-  });
+  var sendmsg, setvar, setvars, getvar, getvars, addtolist, onpageupdate, prev_hash, onhashchanged, prev_location, onlocationchanged, once_available, filter_list, getUrlParameters, out$ = typeof exports != 'undefined' && exports || this;
   sendmsg = function(type, data, callback){
-    var requestId;
-    if (callback == null) {
-      chrome.runtime.sendMessage({
-        type: type,
-        data: data
-      });
-      return;
-    }
-    requestId = Math.floor(Math.random() * 9999999).toString();
-    pending_requests[requestId] = callback;
-    return chrome.runtime.sendMessage({
+    chrome.runtime.sendMessage({
       type: type,
-      data: data,
-      requestId: requestId
+      data: data
+    }, function(response){
+      if (callback != null) {
+        return callback(response);
+      }
     });
+    return true;
   };
   out$.setvar = setvar = function(key, value, callback){
     var data;

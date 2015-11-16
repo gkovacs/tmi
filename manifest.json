@@ -20,6 +20,7 @@
       "minimongo.js",
       "memoize.js",
       "background_common.js",
+      "fields/get_field.js",
       "background.js"
     ]
   },
@@ -45,5 +46,11 @@
     "page": "options.html",
     "chrome_style": false,
     "open_in_tab": true
+  },
+  "externally_connectable": {
+    "matches": [
+      "*://localhost:*/*",
+      "*://autosurvey.pancakeapps.com/*"
+    ]
   }
 }

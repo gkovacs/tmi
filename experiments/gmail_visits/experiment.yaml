@@ -1,0 +1,7 @@
+title: Your Gmail Visits
+matches:
+  - 'mail.google.com'
+scripts:
+  - /lib/common_lib.js
+  # - /lib/querystring.js
+  - index.js

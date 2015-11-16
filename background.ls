@@ -73,8 +73,11 @@ message_handlers = {
     <- async.forEachOfSeries data, (v, k, ncallback) ->
       <- setvar k, v
       ncallback()
-    if callback?
-      callback()
+    callback()
+  'getfield': (name, callback) ->
+    getfield name, callback
+  'getfields': (namelist, callback) ->
+    getfields namelist, callback
   'getvar': (name, callback) ->
     getvar name, callback
   'getvars': (namelist, callback) ->
@@ -83,8 +86,7 @@ message_handlers = {
       val <- getvar name
       output[name] = val
       ncallback()
-    if callback?
-      callback output
+    callback output
   'addtolist': (data, callback) ->
     {list, item} = data
     addtolist list, item, callback
@@ -98,14 +100,24 @@ message_handlers = {
   'load_experiment': (data, callback) ->
     {experiment_name} = data
     load_experiment experiment_name, ->
-      if callback?
-        callback()
+      callback()
   'load_experiment_for_location': (data, callback) ->
     {location} = data
     load_experiment_for_location location, ->
-      if callback?
-        callback()
+      callback()
 }
+
+ext_message_handlers = {
+  # 'getfields': message_handers.getfields
+  'getfields': (namelist, callback) ->
+    confirm_permissions namelist, (accepted) ->
+      if not accepted
+        return
+      getfields namelist, callback
+}
+
+confirm_permissions = (namelist, callback) ->
+  sendTab 'confirm_permissions', namelist, callback
 
 send_pageupdate_to_tab = (tabId) ->
   chrome.tabs.sendMessage tabId, {event: 'pageupdate'}
@@ -114,8 +126,8 @@ onWebNav = (tab) ->
   if tab.frameId == 0 # top-level frame
     {tabId} = tab
     possible_experiments <- list_available_experiments_for_location(tab.url)
-    if possible_experiments.length > 0
-      chrome.pageAction.show(tabId)
+    #if possible_experiments.length > 0
+    #  chrome.pageAction.show(tabId)
     console.log 'pageupdate sent to tab'
     send_pageupdate_to_tab(tabId)
 
@@ -134,6 +146,23 @@ chrome.tabs.onUpdated.addListener (tabId, changeInfo, tab) ->
     # load_experiment_for_location tab.url
 */
 
+chrome.runtime.onMessageExternal.addListener (request, sender, sendResponse) ->
+  console.log 'onMessageExternal'
+  console.log request
+  {type, data} = request
+  console.log type
+  console.log data
+  message_handler = ext_message_handlers[type]
+  if not message_handler?
+    return
+  tabId = sender.tab.id
+  message_handler data, (response) ~>
+    #console.log 'response is:'
+    #console.log response
+    if sendResponse?
+      sendResponse response
+  return true # async response
+
 chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
   {type, data} = request
   console.log type
@@ -141,7 +170,7 @@ chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
   message_handler = message_handlers[type]
   if not message_handler?
     return
-  tabId = sender.tab.id
+  # tabId = sender.tab.id
   message_handler data, (response) ->
     console.log 'message handler response:'
     console.log response
@@ -149,8 +178,9 @@ chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
     #console.log response_data
     # chrome bug - doesn't seem to actually send the response back....
     #sendResponse response_data
-    #sendResponse response
-    {requestId} = request
-    if requestId? # response requested
-      chrome.tabs.sendMessage tabId, {event: 'backgroundresponse', requestId, response}
-
+    if sendResponse?
+      sendResponse response
+    # {requestId} = request
+    # if requestId? # response requested
+    #  chrome.tabs.sendMessage tabId, {event: 'backgroundresponse', requestId, response}
+  return true

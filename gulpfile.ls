@@ -7,7 +7,7 @@ require! {
   'gulp-cr-lf-replace'
 }
 
-lspattern = ['*.ls', 'experiments/**/*.ls']
+lspattern = ['*.ls', 'experiments/**/*.ls', 'fields/**/*.ls']
 gulp.task 'livescript', ->
   gulp.src(lspattern, {base: './'})
   .pipe(gulp-changed('.', {extension: '.js'}))

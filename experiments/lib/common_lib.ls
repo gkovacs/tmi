@@ -1,3 +1,4 @@
+/*
 pending_requests = {} # requestId -> callback
 
 # listen to responses from the background thread
@@ -23,6 +24,16 @@ sendmsg = (type, data, callback) ->
     data
     requestId
   } #, callback
+*/
+
+sendmsg = (type, data, callback) ->
+  chrome.runtime.sendMessage {
+    type
+    data
+  }, (response) ->
+    if callback?
+      callback response
+  return true
 
 export setvar = (key, value, callback) ->
   data = {}

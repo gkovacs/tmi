@@ -6,7 +6,7 @@
   gulpPrint = require('gulp-print');
   gulpLivescript = require('gulp-livescript');
   gulpCrLfReplace = require('gulp-cr-lf-replace');
-  lspattern = ['*.ls', 'experiments/**/*.ls'];
+  lspattern = ['*.ls', 'experiments/**/*.ls', 'fields/**/*.ls'];
   gulp.task('livescript', function(){
     gulp.src(lspattern, {
       base: './'

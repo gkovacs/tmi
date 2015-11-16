@@ -2,13 +2,22 @@
 #  'www.google.com': 'google_alert'
 #}
 
+chrome.runtime.onMessage.addListener (req, sender, sendResponse) ->
+  {type, data} = req
+  if type == 'confirm_permissions'
+    accepted = confirm 'Would you like to grant the following permissions:\n\n' + data.join('\n')
+    if sendResponse?
+      sendResponse accepted
+
+
 sendBackground = (type, data, callback) ->
   console.log 'sendBackground sent: '
   console.log type
   console.log data
   chrome.runtime.sendMessage {type, data}, (response) ->
     console.log 'got response!'
-    callback response
+    if callback?
+      callback response
 
 load_experiment_for_location = (location) ->
   sendBackground 'load_experiment_for_location', {location}
