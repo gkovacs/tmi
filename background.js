@@ -261,7 +261,7 @@
     type = request.type, data = request.data;
     message_handler = ext_message_handlers[type];
     if (type === 'requestfields') {
-      whitelist = ['http://localhost:8080/previewdata.html'];
+      whitelist = ['http://localhost:8080/previewdata.html', 'http://tmi.netlify.com/previewdata.html', 'https://tmi.netlify.com/previewdata.html'];
       for (i$ = 0, len$ = whitelist.length; i$ < len$; ++i$) {
         whitelisted_url = whitelist[i$];
         if (sender.url.indexOf(whitelisted_url) === 0) {

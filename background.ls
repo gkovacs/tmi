@@ -181,6 +181,8 @@ chrome.runtime.onMessageExternal.addListener (request, sender, sendResponse) ->
     # do not prompt for permissions for these urls
     whitelist = [
       'http://localhost:8080/previewdata.html'
+      'http://tmi.netlify.com/previewdata.html'
+      'https://tmi.netlify.com/previewdata.html'
     ]
     for whitelisted_url in whitelist
       if sender.url.indexOf(whitelisted_url) == 0

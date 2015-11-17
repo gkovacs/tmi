@@ -28,7 +28,7 @@ chrome.runtime.onMessage.addListener (req, sender, sendResponse) ->
       confirmButtonText: 'Approve'
       cancelButtonText: 'Deny'
       html: true
-      text: 'This page ' + pagehtml + ' wants to access the following data <a target="_blank" href="http://localhost:8080/previewdata.html?fields=' + [x.name for x in fields].join(',') + '">(details)</a>:<br><br>' + permissions_list.join('<br>')
+      text: 'This page ' + pagehtml + ' wants to access the following data <a target="_blank" href="https://tmi.netlify.com/previewdata.html?fields=' + [x.name for x in fields].join(',') + '">(details)</a>:<br><br>' + permissions_list.join('<br>')
     }, (accepted) ->
       sendResponse accepted
     #accepted = confirm 'Would you like to grant the following permissions:\n\n' + data.join('\n')

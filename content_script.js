@@ -32,7 +32,7 @@
         confirmButtonText: 'Approve',
         cancelButtonText: 'Deny',
         html: true,
-        text: 'This page ' + pagehtml + ' wants to access the following data <a target="_blank" href="http://localhost:8080/previewdata.html?fields=' + (function(){
+        text: 'This page ' + pagehtml + ' wants to access the following data <a target="_blank" href="https://tmi.netlify.com/previewdata.html?fields=' + (function(){
           var i$, ref$, len$, results$ = [];
           for (i$ = 0, len$ = (ref$ = fields).length; i$ < len$; ++i$) {
             x = ref$[i$];
