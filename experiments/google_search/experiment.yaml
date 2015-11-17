@@ -1,6 +1,6 @@
 title: Your Google Searches
 matches:
-  - 'google.com'
+  - 'www.google.com'
 scripts:
   - /lib/common_lib.js
   - /lib/querystring.js

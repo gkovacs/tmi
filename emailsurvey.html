@@ -3,15 +3,34 @@
 
 <link rel="import" href="autofill-data.html">
 
-<script src="sample.js"></script>
+<link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="emailsurvey.js"></script>
 
 </head>
 
 <body>
 
-<autofill-data id="autofill" pagename="How addicted are you to email?" fields="num_gmail_visits_in_past_24_hours,num_gmail_visits"></autofill-data>
+<autofill-data id="autofill" pagename="How addicted to email are you?" fields="gmail_visits,num_gmail_visits,num_gmail_visits_in_past_24_hours,time_spent_composing_emails_gmail,num_gmail_visits_per_day,time_spent_composing_email_per_day_gmail,time_spent_on_gmail_in_past_24_hours,time_spent_on_gmail,time_spent_on_gmail_per_day,time_spent_composing_emails_gmail_in_past_24_hours"></autofill-data>
 
-<pre id="displayresults"></pre>
+<h2>How addicted to email are you?</h2>
+
+<h3>Symptoms</h3>
+
+<p>In the past 24 hours, you visited Gmail <span id="num_gmail_visits_in_past_24_hours_display">N</span> times, and spent <span id="time_spent_on_gmail_in_past_24_hours_display">N</span> seconds on Gmail! Of those, <span id="time_spent_composing_emails_gmail_in_past_24_hours_display">N</span> seconds were spent composing emails.</p>
+
+<p>On an average day, you visit Gmail <span id="num_gmail_visits_per_day_display">N</span> times, and spend <span id="time_spent_on_gmail_per_day_display">N</span> seconds on Gmail!  Of those, <span id="time_spent_composing_email_per_day_gmail_display">N</span> seconds are spent composing emails.</p>
+
+<h3>Your Peers</h3>
+
+<p>But don't worry you're not alone! N% of your peers actually spent more time on gmail than you do!</p>
+
+<h3>Diagnosis</h3>
+
+<p id="diagnosis_display">DIAGNOSIS</p>
+
+<pre id="displayresults" style="display: none"></pre>
 
 </body>
 

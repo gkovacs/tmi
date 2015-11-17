@@ -25,9 +25,15 @@ $(document).ready ->
 (function(){
   document.addEventListener('DOMContentLoaded', function(){
     return document.querySelector('#autofill').addEventListener('have-data', function(results){
+      var data, k, v;
       console.log('have-data callback');
       console.log(results.detail);
-      return document.querySelector('#displayresults').innerText = JSON.stringify(results.detail, null, 2);
+      data = results.detail;
+      for (k in data) {
+        v = data[k];
+        $('#' + k + '_display').text(v);
+      }
+      return $('#diagnosis_display').text('You are in desperate need of email-withdrawal therapy. Act before it is too late! Join your local chapter of Gmail Addicts Anonymous.');
     });
   });
 }).call(this);

@@ -51,9 +51,39 @@ gmail_visits:
   type: list
 
 num_gmail_visits:
-  description: Number of times you visited Gmail total
+  description: Number of times you have visited Gmail total
   type: computed
 
 num_gmail_visits_in_past_24_hours:
   description: Number of times you visited Gmail in the past 24 hours
   type: computed
+
+time_spent_composing_emails_gmail:
+  description: Amount of time you have spent composing emails on Gmail total (in seconds)
+  type: computed
+
+num_gmail_visits_per_day:
+  description: Average number of times you visit Gmail each day
+  type: computed
+
+time_spent_composing_emails_gmail_in_past_24_hours:
+  description: Amount of time you spent composing email on Gmail in the past 24 hours (in seconds)
+  type: computed
+
+time_spent_composing_email_per_day_gmail:
+  description: Average amount of time you spend composing email on Gmail each day (in seconds)
+  type: computed
+
+time_spent_on_gmail_in_past_24_hours:
+  description: Amount of time you have spent on Gmail in the past 24 hours (in seconds)
+  type: computed
+
+time_spent_on_gmail:
+  description: Amount of time you have spent on Gmail total (in seconds)
+  type: computed
+
+time_spent_on_gmail_per_day:
+  description: Average amount of time you spend on Gmail each day (in seconds)
+  type: computed
+
+

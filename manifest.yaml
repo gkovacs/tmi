@@ -15,6 +15,7 @@ background:
     - bower_components/jquery/dist/jquery.min.js
     - bower_components/async/dist/async.min.js
     - bower_components/js-yaml/dist/js-yaml.min.js
+    - prelude.js
     - minimongo.js
     - memoize.js
     - background_common.js
