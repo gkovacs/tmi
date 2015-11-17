@@ -2,7 +2,7 @@
   var main;
   main = function(){
     var params, query, item;
-    console.log('running main in google_search');
+    console.log('running main in bing_search');
     if (window.location.host !== 'www.bing.com') {
       console.log('not on www.bing.com');
       console.log('host location is:');
@@ -21,6 +21,5 @@
     };
     return addtolist('bing_history', item);
   };
-  main();
   onlocationchanged(main);
 }).call(this);

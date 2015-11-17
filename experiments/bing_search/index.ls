@@ -1,5 +1,5 @@
 main = ->
-  console.log 'running main in google_search'
+  console.log 'running main in bing_search'
   if window.location.host != 'www.bing.com'
     console.log 'not on www.bing.com'
     console.log 'host location is:'
@@ -12,7 +12,7 @@ main = ->
   item = {query: query, timestamp: Date.now(), time: new Date().toString()}
   addtolist 'bing_history', item
 
-main()
+# main()
 onlocationchanged main
 
 

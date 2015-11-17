@@ -54,6 +54,7 @@ export addtolist = (list, item, callback) ->
   sendmsg 'addtolist', data, callback
 
 export onpageupdate = (callback) ->
+  # not actually working right now I think
   chrome.runtime.onMessage.addListener (req, sender, sendResponse) ->
     if req.event == 'pageupdate'
       console.log 'onpageupdate event being called'

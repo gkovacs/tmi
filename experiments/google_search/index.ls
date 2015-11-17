@@ -48,7 +48,7 @@ setInterval ->
   console.log 'interval is working for google_search'
 , 5000
 */
-onpageupdate main
+# onpageupdate main
 onhashchanged main
 
 

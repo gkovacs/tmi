@@ -45,6 +45,5 @@ if self_link.length == 1
     console.log 'interval is working for google_search'
   , 5000
   */
-  onpageupdate(main);
   onhashchanged(main);
 }).call(this);
