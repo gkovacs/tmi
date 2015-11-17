@@ -23,7 +23,7 @@ $(document).ready ->
   return
 */
 
-$(document).ready ->
+document.addEventListener 'DOMContentLoaded', ->
   document.querySelector('#autofill').addEventListener 'have-data', (results) ->
     console.log 'have-data callback'
     console.log results.detail

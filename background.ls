@@ -113,11 +113,21 @@ ext_message_handlers = {
     confirm_permissions namelist, (accepted) ->
       if not accepted
         return
-      getfields namelist, callback
+      getfields namelist, (results) ->
+        console.log 'getfields result:'
+        console.log results
+        callback results
 }
 
-confirm_permissions = (namelist, callback) ->
-  sendTab 'confirm_permissions', namelist, callback
+confirm_permissions = (fieldlist, callback) ->
+  field_info <- get_field_info()
+  field_info_list = []
+  for x in fieldlist
+    output = {name: x}
+    if field_info[x]? and field_info[x].description?
+      output.description = field_info[x].description
+    field_info_list.push output
+  sendTab 'confirm_permissions', field_info_list, callback
 
 send_pageupdate_to_tab = (tabId) ->
   chrome.tabs.sendMessage tabId, {event: 'pageupdate'}
@@ -149,13 +159,22 @@ chrome.tabs.onUpdated.addListener (tabId, changeInfo, tab) ->
 chrome.runtime.onMessageExternal.addListener (request, sender, sendResponse) ->
   console.log 'onMessageExternal'
   console.log request
+  console.log 'sender for onMessageExternal is:'
+  console.log sender
   {type, data} = request
-  console.log type
-  console.log data
   message_handler = ext_message_handlers[type]
+  if type == 'getfields'
+    # do not prompt for permissions for these urls
+    whitelist = [
+      'http://localhost:8080/previewdata.html'
+    ]
+    for whitelisted_url in whitelist
+      if sender.url.indexOf(whitelisted_url) == 0
+        message_handler = message_handers.getfields
+        break
   if not message_handler?
     return
-  tabId = sender.tab.id
+  #tabId = sender.tab.id
   message_handler data, (response) ~>
     #console.log 'response is:'
     #console.log response

@@ -16,7 +16,7 @@ custom_fields = {
 
 }
 
-export get_field_to_getters = (callback) ->
+export get_field_to_getters = memoizeSingleAsync (callback) ->
   output = {}
   for let field in single_fields
     output[field] = (ncallback) ->
@@ -45,3 +45,8 @@ export getfields = (fieldname_list, callback) ->
     ncallback()
   if callback?
     callback output
+
+export get_field_info = memoizeSingleAsync (callback) ->
+  field_info_text <- $.get 'fields/field_info.yaml'
+  field_info = jsyaml.safeLoad field_info_text
+  callback field_info

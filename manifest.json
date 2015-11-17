@@ -31,7 +31,11 @@
         "http://*/*"
       ],
       "js": [
+        "bower_components/sweetalert/dist/sweetalert.min.js",
         "content_script.js"
+      ],
+      "css": [
+        "bower_components/sweetalert/dist/sweetalert.css"
       ]
     }
   ],

@@ -1,9 +1,9 @@
 (function(){
-  var list_fields, single_fields, custom_fields, get_field_to_getters, getfield, getfields, out$ = typeof exports != 'undefined' && exports || this;
+  var list_fields, single_fields, custom_fields, get_field_to_getters, getfield, getfields, get_field_info, out$ = typeof exports != 'undefined' && exports || this;
   list_fields = ['google_history', 'bing_history'];
   single_fields = ['facebook_name', 'facebook_link', 'facebook_birthdate', 'facebook_education', 'facebook_hometown', 'facebook_location'];
   custom_fields = {};
-  out$.get_field_to_getters = get_field_to_getters = function(callback){
+  out$.get_field_to_getters = get_field_to_getters = memoizeSingleAsync(function(callback){
     var output, i$, ref$, len$, k, v;
     output = {};
     for (i$ = 0, len$ = (ref$ = single_fields).length; i$ < len$; ++i$) {
@@ -27,7 +27,7 @@
         return getlist(field, ncallback);
       };
     }
-  };
+  });
   out$.getfield = getfield = function(fieldname, callback){
     return get_field_to_getters(function(field_getters){
       var field_getter;
@@ -55,4 +55,11 @@
       }
     });
   };
+  out$.get_field_info = get_field_info = memoizeSingleAsync(function(callback){
+    return $.get('fields/field_info.yaml', function(field_info_text){
+      var field_info;
+      field_info = jsyaml.safeLoad(field_info_text);
+      return callback(field_info);
+    });
+  });
 }).call(this);

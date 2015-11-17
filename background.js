@@ -178,12 +178,30 @@
         if (!accepted) {
           return;
         }
-        return getfields(namelist, callback);
+        return getfields(namelist, function(results){
+          console.log('getfields result:');
+          console.log(results);
+          return callback(results);
+        });
       });
     }
   };
-  confirm_permissions = function(namelist, callback){
-    return sendTab('confirm_permissions', namelist, callback);
+  confirm_permissions = function(fieldlist, callback){
+    return get_field_info(function(field_info){
+      var field_info_list, i$, ref$, len$, x, output;
+      field_info_list = [];
+      for (i$ = 0, len$ = (ref$ = fieldlist).length; i$ < len$; ++i$) {
+        x = ref$[i$];
+        output = {
+          name: x
+        };
+        if (field_info[x] != null && field_info[x].description != null) {
+          output.description = field_info[x].description;
+        }
+        field_info_list.push(output);
+      }
+      return sendTab('confirm_permissions', field_info_list, callback);
+    });
   };
   send_pageupdate_to_tab = function(tabId){
     return chrome.tabs.sendMessage(tabId, {
@@ -214,17 +232,26 @@
       # load_experiment_for_location tab.url
   */
   chrome.runtime.onMessageExternal.addListener(function(request, sender, sendResponse){
-    var type, data, message_handler, tabId, this$ = this;
+    var type, data, message_handler, whitelist, i$, len$, whitelisted_url, this$ = this;
     console.log('onMessageExternal');
     console.log(request);
+    console.log('sender for onMessageExternal is:');
+    console.log(sender);
     type = request.type, data = request.data;
-    console.log(type);
-    console.log(data);
     message_handler = ext_message_handlers[type];
+    if (type === 'getfields') {
+      whitelist = ['http://localhost:8080/previewdata.html'];
+      for (i$ = 0, len$ = whitelist.length; i$ < len$; ++i$) {
+        whitelisted_url = whitelist[i$];
+        if (sender.url.indexOf(whitelisted_url) === 0) {
+          message_handler = message_handers.getfields;
+          break;
+        }
+      }
+    }
     if (message_handler == null) {
       return;
     }
-    tabId = sender.tab.id;
     message_handler(data, function(response){
       if (sendResponse != null) {
         return sendResponse(response);

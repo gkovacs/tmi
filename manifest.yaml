@@ -25,7 +25,11 @@ content_scripts:
       - 'https://*/*'
       - 'http://*/*'
     js:
+      - bower_components/sweetalert/dist/sweetalert.min.js
       - content_script.js
+    css:
+      - bower_components/sweetalert/dist/sweetalert.css
+    run_at: document_start
 #page_action:
 browser_action:
   default_icon: 

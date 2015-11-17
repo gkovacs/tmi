@@ -6,7 +6,7 @@
       data: data
     }, function(response){
       if (callback != null) {
-        return callback();
+        return callback(response);
       }
     });
   };

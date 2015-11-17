@@ -17,8 +17,10 @@ Polymer {
     self = this
     console.log newfields
     console.log 'sendMessage called'
-    sendExtension 'getfields', newfields, (response) ->
-      console.log 'response received from sendMessage'
-      console.log response
-      self.fire 'have-data', response
+    # once content script is loaded
+    once_available '#autosurvey_content_script_loaded', ->
+      sendExtension 'getfields', newfields, (response) ->
+        console.log 'response received from sendMessage'
+        self.data = response
+        self.fire 'have-data', response
 }

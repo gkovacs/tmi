@@ -20,10 +20,12 @@
       self = this;
       console.log(newfields);
       console.log('sendMessage called');
-      return sendExtension('getfields', newfields, function(response){
-        console.log('response received from sendMessage');
-        console.log(response);
-        return self.fire('have-data', response);
+      return once_available('#autosurvey_content_script_loaded', function(){
+        return sendExtension('getfields', newfields, function(response){
+          console.log('response received from sendMessage');
+          self.data = response;
+          return self.fire('have-data', response);
+        });
       });
     }
   });

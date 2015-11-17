@@ -1,18 +1,5 @@
 (function(){
-  var getUrlParameters, open_page, open_survey, return_home, view_data, out$ = typeof exports != 'undefined' && exports || this;
-  out$.getUrlParameters = getUrlParameters = function(){
-    var url, hash, map, parts;
-    url = window.location.href;
-    hash = url.lastIndexOf('#');
-    if (hash !== -1) {
-      url = url.slice(0, hash);
-    }
-    map = {};
-    parts = url.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value){
-      return map[key] = decodeURIComponent(value).split('+').join(' ');
-    });
-    return map;
-  };
+  var open_page, open_survey, return_home, view_data, out$ = typeof exports != 'undefined' && exports || this;
   out$.open_page = open_page = function(page_name, options){
     var newpage, k, v;
     newpage = $("<" + page_name + ">");
