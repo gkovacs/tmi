@@ -17,9 +17,7 @@
   out$.get_experiments = get_experiments = memoizeSingleAsync(function(callback){
     return $.get('/experiments/experiments_list.yaml', function(experiments_list_text){
       var experiments_list, output;
-      console.log(experiments_list_text);
       experiments_list = jsyaml.safeLoad(experiments_list_text);
-      console.log(experiments_list);
       output = {};
       return async.mapSeries(experiments_list, function(experiment_name, ncallback){
         return getExperimentInfo(experiment_name, function(experiment_info){

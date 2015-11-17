@@ -2,18 +2,33 @@
 
 console.log 'running browsing_time_by_site'
 
-mousemoved = ->
+pageactive = ->
   #console.log 'mouse moved'
   item = {host: window.location.host, url: window.location.href, timestamp: Date.now(), time: new Date().toString(), interval: 5}
   console.log item
   addtolist 'browsing_time_by_site', item
 
-throttled_mousemoved = _.throttle mousemoved, 5000, {trailing: false}
+throttled_pageactive = _.throttle pageactive, 5000, {trailing: false}
 
-throttled_mousemoved()
+throttled_pageactive()
+
+window.addEventListener 'mousedown', ->
+  throttled_pageactive()
 
 window.addEventListener 'mousemove', ->
-  throttled_mousemoved()
+  throttled_pageactive()
+
+window.addEventListener 'scroll', ->
+  throttled_pageactive()
+
+window.addEventListener 'mousewheel', ->
+  throttled_pageactive()
+
+window.addEventListener 'keydown', ->
+  throttled_pageactive()
+
+window.addEventListener 'touchstart', ->
+  throttled_pageactive()
 
 /*
 main = ->

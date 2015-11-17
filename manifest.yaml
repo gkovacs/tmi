@@ -18,6 +18,7 @@ background:
     - minimongo.js
     - memoize.js
     - background_common.js
+    - fields/computed_fields.js
     - fields/get_field.js
     - background.js
 content_scripts:
@@ -29,7 +30,7 @@ content_scripts:
       - content_script.js
     css:
       - bower_components/sweetalert/dist/sweetalert.css
-    run_at: document_start
+    run_at: document_end
 #page_action:
 browser_action:
   default_icon: 

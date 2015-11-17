@@ -1,6 +1,7 @@
 Polymer {
   is: 'autofill-data'
   properties: {
+    pagename: String
     fields: {
       type: String
     }
@@ -10,6 +11,7 @@ Polymer {
       observer: 'fieldsChanged'
     }
     data: Object
+    field_descriptions: Object
   }
   computeFieldsArray: (fields) ->
     return levn.parse('[String]', fields)
@@ -19,8 +21,10 @@ Polymer {
     console.log 'sendMessage called'
     # once content script is loaded
     once_available '#autosurvey_content_script_loaded', ->
-      sendExtension 'getfields', newfields, (response) ->
+      sendExtension 'requestfields', {fieldnames: newfields, pagename: self.pagename}, (response) ->
         console.log 'response received from sendMessage'
         self.data = response
-        self.fire 'have-data', response
+        sendExtension 'get_field_descriptions', newfields, (field_descriptions) ->
+          self.field_descriptions = field_descriptions
+          self.fire 'have-data', response
 }

@@ -1,32 +1,26 @@
 (function(){
   var execute_content_script, insert_css, load_experiment, load_experiment_for_location, getLocation, getTabInfo, sendTab, message_handlers, ext_message_handlers, confirm_permissions, send_pageupdate_to_tab, onWebNav;
-  console.log('weblab running in background');
-  execute_content_script = function(options, callback){
+  execute_content_script = function(tabid, options, callback){
     if (options.run_at == null) {
-      options.run_at = 'document_start';
+      options.run_at = 'document_end';
     }
     if (options.all_frames == null) {
       options.all_frames = false;
     }
-    return chrome.tabs.query({
-      active: true,
-      lastFocusedWindow: true
-    }, function(tabs){
-      if (tabs.length === 0) {
-        if (callback != null) {
-          callback();
-        }
-        return;
+    if (tabid == null) {
+      if (callback != null) {
+        callback();
       }
-      return chrome.tabs.executeScript(tabs[0].id, {
-        file: options.path,
-        allFrames: options.all_frames,
-        runAt: options.run_at
-      }, function(){
-        if (callback != null) {
-          return callback();
-        }
-      });
+      return;
+    }
+    return chrome.tabs.executeScript(tabid, {
+      file: options.path,
+      allFrames: options.all_frames,
+      runAt: options.run_at
+    }, function(){
+      if (callback != null) {
+        return callback();
+      }
     });
   };
   insert_css = function(css_path, callback){
@@ -35,26 +29,30 @@
     }
   };
   load_experiment = function(experiment_name, callback){
-    console.log('load_experiment ' + experiment_name);
+    console.log('start load_experiment ' + experiment_name);
     return get_experiments(function(all_experiments){
       var experiment_info;
       experiment_info = all_experiments[experiment_name];
-      return async.eachSeries(experiment_info.scripts, function(options, ncallback){
-        if (typeof options === 'string') {
-          options = {
-            path: options
-          };
-        }
-        if (options.path[0] === '/') {
-          options.path = 'experiments' + options.path;
-        } else {
-          options.path = "experiments/" + experiment_name + "/" + options.path;
-        }
-        return execute_content_script(options, ncallback);
-      }, function(){
-        return async.eachSeries(experiment_info.css, function(css_name, ncallback){
-          return insert_css("experiments/" + experiment_name + "/" + css_name, ncallback);
+      return chrome.tabs.query({
+        active: true,
+        lastFocusedWindow: true
+      }, function(tabs){
+        var tabid;
+        tabid = tabs[0].id;
+        return async.eachSeries(experiment_info.scripts, function(options, ncallback){
+          if (typeof options === 'string') {
+            options = {
+              path: options
+            };
+          }
+          if (options.path[0] === '/') {
+            options.path = 'experiments' + options.path;
+          } else {
+            options.path = "experiments/" + experiment_name + "/" + options.path;
+          }
+          return execute_content_script(tabid, options, ncallback);
         }, function(){
+          console.log('done load_experiment ' + experiment_name);
           if (callback != null) {
             return callback();
           }
@@ -127,6 +125,11 @@
     'getfields': function(namelist, callback){
       return getfields(namelist, callback);
     },
+    'requestfields': function(info, callback){
+      var fieldnames;
+      fieldnames = info.fieldnames;
+      return getfields(fieldnames, callback);
+    },
     'getvar': function(name, callback){
       return getvar(name, callback);
     },
@@ -173,24 +176,39 @@
     }
   };
   ext_message_handlers = {
-    'getfields': function(namelist, callback){
-      return confirm_permissions(namelist, function(accepted){
+    'requestfields': function(info, callback){
+      return confirm_permissions(info, function(accepted){
         if (!accepted) {
           return;
         }
-        return getfields(namelist, function(results){
+        return getfields(info.fieldnames, function(results){
           console.log('getfields result:');
           console.log(results);
           return callback(results);
         });
       });
+    },
+    'get_field_descriptions': function(namelist, callback){
+      return get_field_info(function(field_info){
+        var output, i$, ref$, len$, x;
+        output = {};
+        for (i$ = 0, len$ = (ref$ = namelist).length; i$ < len$; ++i$) {
+          x = ref$[i$];
+          if (field_info[x] != null && field_info[x].description != null) {
+            output[x] = field_info[x].description;
+          }
+        }
+        return callback(output);
+      });
     }
   };
-  confirm_permissions = function(fieldlist, callback){
+  confirm_permissions = function(info, callback){
+    var pagename, fieldnames;
+    pagename = info.pagename, fieldnames = info.fieldnames;
     return get_field_info(function(field_info){
       var field_info_list, i$, ref$, len$, x, output;
       field_info_list = [];
-      for (i$ = 0, len$ = (ref$ = fieldlist).length; i$ < len$; ++i$) {
+      for (i$ = 0, len$ = (ref$ = fieldnames).length; i$ < len$; ++i$) {
         x = ref$[i$];
         output = {
           name: x
@@ -200,7 +218,10 @@
         }
         field_info_list.push(output);
       }
-      return sendTab('confirm_permissions', field_info_list, callback);
+      return sendTab('confirm_permissions', {
+        pagename: pagename,
+        fields: field_info_list
+      }, callback);
     });
   };
   send_pageupdate_to_tab = function(tabId){
@@ -239,12 +260,12 @@
     console.log(sender);
     type = request.type, data = request.data;
     message_handler = ext_message_handlers[type];
-    if (type === 'getfields') {
+    if (type === 'requestfields') {
       whitelist = ['http://localhost:8080/previewdata.html'];
       for (i$ = 0, len$ = whitelist.length; i$ < len$; ++i$) {
         whitelisted_url = whitelist[i$];
         if (sender.url.indexOf(whitelisted_url) === 0) {
-          message_handler = message_handers.getfields;
+          message_handler = message_handlers.requestfields;
           break;
         }
       }

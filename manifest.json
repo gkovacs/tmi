@@ -20,6 +20,7 @@
       "minimongo.js",
       "memoize.js",
       "background_common.js",
+      "fields/computed_fields.js",
       "fields/get_field.js",
       "background.js"
     ]
@@ -36,7 +37,8 @@
       ],
       "css": [
         "bower_components/sweetalert/dist/sweetalert.css"
-      ]
+      ],
+      "run_at": "document_end"
     }
   ],
   "browser_action": {

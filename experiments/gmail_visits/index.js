@@ -13,6 +13,8 @@
       timestamp: Date.now(),
       time: new Date().toString()
     };
+    console.log('added item for gmail_visits');
+    console.log(item);
     return addtolist('gmail_visits', item);
   };
   main();

@@ -10,9 +10,7 @@ export getExperimentInfo = (experiment_name, callback) ->
 
 export get_experiments = memoizeSingleAsync (callback) ->
   $.get '/experiments/experiments_list.yaml', (experiments_list_text) ->
-    console.log experiments_list_text
     experiments_list = jsyaml.safeLoad experiments_list_text
-    console.log experiments_list
     output = {}
     errors,results <- async.mapSeries experiments_list, (experiment_name, ncallback) ->
       experiment_info <- getExperimentInfo experiment_name

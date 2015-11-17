@@ -1,7 +1,7 @@
 (function(){
-  var mousemoved, throttled_mousemoved;
+  var pageactive, throttled_pageactive;
   console.log('running browsing_time_by_site');
-  mousemoved = function(){
+  pageactive = function(){
     var item;
     item = {
       host: window.location.host,
@@ -13,12 +13,27 @@
     console.log(item);
     return addtolist('browsing_time_by_site', item);
   };
-  throttled_mousemoved = _.throttle(mousemoved, 5000, {
+  throttled_pageactive = _.throttle(pageactive, 5000, {
     trailing: false
   });
-  throttled_mousemoved();
+  throttled_pageactive();
+  window.addEventListener('mousedown', function(){
+    return throttled_pageactive();
+  });
   window.addEventListener('mousemove', function(){
-    return throttled_mousemoved();
+    return throttled_pageactive();
+  });
+  window.addEventListener('scroll', function(){
+    return throttled_pageactive();
+  });
+  window.addEventListener('mousewheel', function(){
+    return throttled_pageactive();
+  });
+  window.addEventListener('keydown', function(){
+    return throttled_pageactive();
+  });
+  window.addEventListener('touchstart', function(){
+    return throttled_pageactive();
   });
   /*
   main = ->

@@ -1,0 +1,20 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="autofill-data.html">
+<link rel="import" href="preview-field.html">
+
+<dom-module id="preview-data">
+  <style>
+    :host {
+      display: block;
+      width: 100%;
+    }
+  </style>
+  <template>
+    <autofill-data id="autofill" fields="{{fields}}" on-have-data="havedata"></autofill-data>
+    <template is="dom-repeat" items="{{field_info_and_data_list}}" as="field_info_and_data">
+      <preview-field name="{{field_info_and_data.name}}" description="{{field_info_and_data.description}}" data="{{field_info_and_data.data}}"></preview-field>
+      <br>
+    </template>
+  </template>
+  <script src="preview-data.js"></script>
+</dom-module>

@@ -1,18 +1,18 @@
-console.log 'weblab running in background'
+# console.log 'weblab running in background'
 
-execute_content_script = (options, callback) ->
+execute_content_script = (tabid, options, callback) ->
   if not options.run_at?
-    options.run_at = 'document_start' # document_end
+    options.run_at = 'document_end' # document_start
   if not options.all_frames?
     options.all_frames = false
-  chrome.tabs.query {active: true, lastFocusedWindow: true}, (tabs) ->
-    if tabs.length == 0
-      if callback?
-        callback()
-      return
-    chrome.tabs.executeScript tabs[0].id, {file: options.path, allFrames: options.all_frames, runAt: options.run_at}, ->
-      if callback?
-        callback()
+  #chrome.tabs.query {active: true, lastFocusedWindow: true}, (tabs) ->
+  if not tabid?
+    if callback?
+      callback()
+    return
+  chrome.tabs.executeScript tabid, {file: options.path, allFrames: options.all_frames, runAt: options.run_at}, ->
+    if callback?
+      callback()
 
 insert_css = (css_path, callback) ->
   # todo does not do anything currently
@@ -20,9 +20,11 @@ insert_css = (css_path, callback) ->
     callback()
 
 load_experiment = (experiment_name, callback) ->
-  console.log 'load_experiment ' + experiment_name
+  console.log 'start load_experiment ' + experiment_name
   all_experiments <- get_experiments()
   experiment_info = all_experiments[experiment_name]
+  tabs <- chrome.tabs.query {active: true, lastFocusedWindow: true}
+  tabid = tabs[0].id
   <- async.eachSeries experiment_info.scripts, (options, ncallback) ->
     if typeof options == 'string'
       options = {path: options}
@@ -30,9 +32,10 @@ load_experiment = (experiment_name, callback) ->
       options.path = 'experiments' + options.path
     else
       options.path = "experiments/#{experiment_name}/#{options.path}"
-    execute_content_script options, ncallback
-  <- async.eachSeries experiment_info.css, (css_name, ncallback) ->
-    insert_css "experiments/#{experiment_name}/#{css_name}", ncallback
+    execute_content_script tabid, options, ncallback
+  # <- async.eachSeries experiment_info.css, (css_name, ncallback) ->
+  #   insert_css "experiments/#{experiment_name}/#{css_name}", ncallback
+  console.log 'done load_experiment ' + experiment_name
   if callback?
     callback()
 
@@ -78,6 +81,9 @@ message_handlers = {
     getfield name, callback
   'getfields': (namelist, callback) ->
     getfields namelist, callback
+  'requestfields': (info, callback) ->
+    {fieldnames} = info
+    getfields fieldnames, callback
   'getvar': (name, callback) ->
     getvar name, callback
   'getvars': (namelist, callback) ->
@@ -109,25 +115,33 @@ message_handlers = {
 
 ext_message_handlers = {
   # 'getfields': message_handers.getfields
-  'getfields': (namelist, callback) ->
-    confirm_permissions namelist, (accepted) ->
+  'requestfields': (info, callback) ->
+    confirm_permissions info, (accepted) ->
       if not accepted
         return
-      getfields namelist, (results) ->
+      getfields info.fieldnames, (results) ->
         console.log 'getfields result:'
         console.log results
         callback results
+  'get_field_descriptions': (namelist, callback) ->
+    field_info <- get_field_info()
+    output = {}
+    for x in namelist
+      if field_info[x]? and field_info[x].description?
+        output[x] = field_info[x].description
+    callback output
 }
 
-confirm_permissions = (fieldlist, callback) ->
+confirm_permissions = (info, callback) ->
+  {pagename, fieldnames} = info
   field_info <- get_field_info()
   field_info_list = []
-  for x in fieldlist
+  for x in fieldnames
     output = {name: x}
     if field_info[x]? and field_info[x].description?
       output.description = field_info[x].description
     field_info_list.push output
-  sendTab 'confirm_permissions', field_info_list, callback
+  sendTab 'confirm_permissions', {pagename, fields: field_info_list}, callback
 
 send_pageupdate_to_tab = (tabId) ->
   chrome.tabs.sendMessage tabId, {event: 'pageupdate'}
@@ -163,14 +177,14 @@ chrome.runtime.onMessageExternal.addListener (request, sender, sendResponse) ->
   console.log sender
   {type, data} = request
   message_handler = ext_message_handlers[type]
-  if type == 'getfields'
+  if type == 'requestfields'
     # do not prompt for permissions for these urls
     whitelist = [
       'http://localhost:8080/previewdata.html'
     ]
     for whitelisted_url in whitelist
       if sender.url.indexOf(whitelisted_url) == 0
-        message_handler = message_handers.getfields
+        message_handler = message_handlers.requestfields
         break
   if not message_handler?
     return

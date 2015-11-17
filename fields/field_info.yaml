@@ -1,5 +1,59 @@
 facebook_name:
   description: Your full name (from Facebook)
+  type: var
+
+facebook_birthdate:
+  description: Your birthdate (from Facebook)
+  type: var
+
+facebook_education:
+  description: Your educational background (from Facebook)
+  type: var
+
+facebook_hometown:
+  description: Your hometown (from Facebook)
+  type: var
+
+facebook_location:
+  description: Your current city of residence (from Facebook)
+  type: var
 
 facebook_link:
   description: Link to your Facebook profile
+  type: var
+
+google_history:
+  description: Search history on Google
+  type: list
+
+bing_history:
+  description: Search history on Bing
+  type: list
+
+google_queries:
+  description: List of search queries on Google
+  type: computed
+
+bing_queries:
+  description: List of search queries on Bing
+  type: computed
+
+browsing_history:
+  description: Your browsing history
+  type: list
+
+browsing_time_by_site:
+  description: Amount of time you have spent on each website domain
+  type: list
+
+gmail_visits:
+  description: When you visited Gmail
+  type: list
+
+num_gmail_visits:
+  description: Number of times you visited Gmail total
+  type: computed
+
+num_gmail_visits_in_past_24_hours:
+  description: Number of times you visited Gmail in the past 24 hours
+  type: computed
