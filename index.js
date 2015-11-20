@@ -9,7 +9,7 @@
       if (survey != null) {
         tagname = survey + '-survey';
       } else {
-        tagname = 'intro-page';
+        tagname = 'front-page';
       }
     }
     tag = $("<" + tagname + ">");
