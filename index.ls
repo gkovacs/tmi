@@ -17,7 +17,8 @@ startPage = ->
     tag.prop k, v
   tag.appendTo '#contents'
 
-$(document).ready ->
+#$(document).ready ->
+window.addEventListener 'WebComponentsReady', ->
   console.log window.location
   startPage()
   return

@@ -23,7 +23,7 @@
     }
     return tag.appendTo('#contents');
   };
-  $(document).ready(function(){
+  window.addEventListener('WebComponentsReady', function(){
     console.log(window.location);
     startPage();
   });
