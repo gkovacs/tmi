@@ -40,7 +40,7 @@
       <div class="topheader">
         <div style="position: relative">
           <div style="color: white; font-size: 60px; margin-left: 25px">TMI</div>
-          <div style="position: absolute; left: 180px; top: 22px; color: white; font-size: 28px">Explore your online life</div>
+          <div style="position: absolute; left: 180px; top: 22px; color: white; font-size: 28px">Tell me about my internet life</div>
           <img src="stanford_logo.png" style="position: absolute; right: 25px; top: 15px">
         </div>
       </div>
@@ -52,8 +52,9 @@
       On surveys where results will be available in 1 week, say Explore in 1 week or Explore 1 week later<br>
       -->
 
-      <template is="dom-repeat" items="{{experiment_list}}" as="experiment">
-        <div class="experimentbox">
+      <div style="text-align: center">
+        <template is="dom-repeat" items="{{experiment_list}}" as="experiment">
+          <div class="experimentbox">
             <div style="position: relative">
               <div style="padding: 10px">
                 <div style="position: relative; height: 150px">
@@ -63,18 +64,18 @@
                   <div style="position: absolute; top: 70px; width: 320px">
                     <img src="{{experiment.icon}}" style="height: 80px; margin: 0 auto; display: block"></img>
                   </div>
-                  <div style="position: absolute; right: 0px; bottom: 0px; width: 90px">
+                  <div style="position: absolute; right: 0px; bottom: 0px; width: 83px">
                     <div style="text-align: center">Get results:<br><span style="font-weight: bold">{{experiment.available}}</span></div>
-                    <paper-button raised class="explorebutton">Explore</paper-button>
+                    <paper-button raised class="explorebutton">Tell me</paper-button>
                   </div>
                   <div style="position: absolute; right: 0px; top: 110px">
                   </div>
                 </div>
               </div>
             </div>
-        </div>
-      </template>
-      
+          </div>
+        </template>
+      </div>
       <!--
       <template is="dom-repeat" items="{{experiment_list}}" as="experiment">
         <exp-description title="{{experiment.title}}" description="{{experiment.description}}"></exp-description>
