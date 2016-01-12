@@ -22,7 +22,7 @@
             second: "I like the comfortable familiarity of everyday friends"
           }, {
             first: "I like to explore a strange city or section of town by myself, even if it means getting lost",
-            second: "I prefer a guide when I am in a place I don't konw well"
+            second: "I prefer a guide when I am in a place I don't know well"
           }, {
             first: 'I dislike people who do or say things just to shock or upset others',
             second: 'When you can predict almost everything a person will do and say he must be a bore'
