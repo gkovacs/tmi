@@ -1,0 +1,18 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="exp-description.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="experiment-button.html">
+
+<dom-module id="sensation-seeking-survey">
+  <style>
+  </style>
+  <template>
+    <autofill-data id="autofill" pagename="Sensation Seeking Survey" fields="chrome_history_timespent_domain"></autofill-data>
+    <!--<slacking-website-use id="ratedomains"></slacking-website-use>-->
+    <recreational-website-use id="ratedomains"></recreational-website-use>
+    <!--<unplanned-media-consumption id="ratedomains"></unplanned-media-consumption>-->
+    <sensation-seeking-scale></sensation-seeking-scale>
+    <paper-button raised style="background: #4285f4; color: #fff">Submit</paper-button>
+  </template>
+  <script src="sensation-seeking-survey.js"></script>
+</dom-module>

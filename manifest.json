@@ -8,6 +8,8 @@
     "tabs",
     "webNavigation",
     "unlimitedStorage",
+    "history",
+    "idle",
     "http://*/",
     "https://*/"
   ],
@@ -20,10 +22,12 @@
       "prelude.js",
       "minimongo.js",
       "memoize.js",
+      "sizeof.compressed.js",
       "background_common.js",
       "fields/computed_fields.js",
       "fields/get_field.js",
-      "background.js"
+      "background.js",
+      "background_utils.js"
     ]
   },
   "content_scripts": [

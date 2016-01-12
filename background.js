@@ -1,5 +1,5 @@
 (function(){
-  var execute_content_script, insert_css, load_experiment, load_experiment_for_location, getLocation, getTabInfo, sendTab, message_handlers, ext_message_handlers, confirm_permissions, send_pageupdate_to_tab, onWebNav;
+  var execute_content_script, insert_css, load_experiment, load_experiment_for_location, getLocation, getTabInfo, sendTab, message_handlers, ext_message_handlers, confirm_permissions, send_pageupdate_to_tab, onWebNav, page_to_time_spent_info, current_page_info, add_new_session, activate_url, total_time_spent_page_info, is_page_info_active, out$ = typeof exports != 'undefined' && exports || this;
   execute_content_script = function(tabid, options, callback){
     if (options.run_at == null) {
       options.run_at = 'document_end';
@@ -298,4 +298,103 @@
     });
     return true;
   });
+  out$.page_to_time_spent_info = page_to_time_spent_info = {};
+  /*
+  add_time_spent = (url, time) ->
+    if not page_to_time_spent[url]?
+      page_to_time_spent[url] = time
+    else
+      page_to_time_spent[url] += time
+  */
+  current_page_info = {
+    url: '',
+    start: Date.now()
+  };
+  add_new_session = function(url){
+    var ref$;
+    if (page_to_time_spent_info[url] == null) {
+      page_to_time_spent_info[url] = [];
+    }
+    page_to_time_spent_info[url].push({
+      url: url,
+      start: Date.now()
+    });
+    return current_page_info = (ref$ = page_to_time_spent_info[url])[ref$.length - 1];
+  };
+  chrome.idle.onStateChanged.addListener(function(newstate){
+    console.log('idle stateChanged: ' + newstate);
+    if (newstate === 'idle') {
+      return current_page_info.idle = Date.now();
+    } else if (newstate === 'locked') {
+      return current_page_info.locked = Date.now();
+    } else if (newstate === 'active') {
+      return add_new_session(current_page_info.url);
+    }
+  });
+  activate_url = function(url){
+    if (url === current_page_info.url) {
+      if (is_page_info_active(current_page_info)) {
+        return;
+      }
+    }
+    return add_new_session(url);
+  };
+  total_time_spent_page_info = function(page_info){
+    var end_types, end_time, i$, len$, x;
+    end_types = ['idle', 'locked', 'unfocused'];
+    end_time = Date.now();
+    for (i$ = 0, len$ = end_types.length; i$ < len$; ++i$) {
+      x = end_types[i$];
+      if (page_info[x] != null) {
+        end_time = Math.min(end_time, page_info[x]);
+      }
+    }
+    return end_time;
+  };
+  is_page_info_active = function(page_info){
+    var end_types, i$, len$, x;
+    end_types = ['idle', 'locked', 'unfocused'];
+    for (i$ = 0, len$ = end_types.length; i$ < len$; ++i$) {
+      x = end_types[i$];
+      if (page_info[x] != null) {
+        return false;
+      }
+    }
+    return true;
+  };
+  chrome.tabs.onUpdated.addListener(function(tabid, changeinfo, tab){
+    var url;
+    console.log('tabs updated: ' + tabid);
+    console.log(changeinfo);
+    console.log(tab);
+    url = tab.url;
+    return activate_url(url);
+  });
+  chrome.tabs.onActivated.addListener(function(tabinfo){
+    console.log('active tabs changed:');
+    console.log(tabinfo);
+    return chrome.tabs.get(tabinfo.tabId, function(tab){
+      return activate_url(tab.url);
+    });
+  });
+  chrome.windows.onFocusChanged.addListener(function(windowid){
+    console.log('focused window is:');
+    console.log(windowid);
+    return chrome.tabs.query({
+      active: true,
+      lastFocusedWindow: true
+    }, function(active_tabs){
+      var url;
+      console.log(active_tabs);
+      if (active_tabs.length === 0) {
+        return current_page_info.unfocused = Date.now();
+      } else {
+        url = active_tabs[0].url;
+        return add_new_session(url);
+      }
+    });
+  });
+  setInterval(function(){
+    return console.log(current_page_info);
+  }, 2000);
 }).call(this);

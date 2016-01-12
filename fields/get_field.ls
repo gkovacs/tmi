@@ -34,6 +34,59 @@ export string_to_function = (str) ->
   return new Function(lines.join('\n'))
 */
 
+special_aliases =
+  'all_vars': (callback) ->
+    output = []
+    field_info <- get_field_info()
+    for field,info of field_info
+      if info? and info.type == 'var'
+        output.push field
+    callback output
+  'all_lists': (callback) ->
+    output = []
+    field_info <- get_field_info()
+    for field,info of field_info
+      if info? and info.type == 'list'
+        output.push field
+    callback output
+  'all_data': (callback) ->
+    output = []
+    field_info <- get_field_info()
+    for field,info of field_info
+      if info? and info.type? and ['var', 'list', 'computed'].indexOf(info.type) != -1
+        output.push field
+    callback output
+
+export resolve_aliases = (fieldnames, callback) ->
+  output = []
+  field_info <- get_field_info()
+  <- async.eachSeries fieldnames, (field, donecb) ->
+    info = field_info[field]
+    console.log info
+    if not info?
+      output.push field
+      return donecb()
+    if not info.type?
+      output.push field
+      return donecb()
+    if ['special_alias', 'alias'].indexOf(info.type) == -1
+      output.push field
+      return donecb()
+    if info.type == 'alias'
+      for x in info.member_fields
+        output.push x
+      return donecb()
+    # must be special_alias
+    special_alias_getter = special_aliases[field]
+    if not special_alias_getter?
+      output.push field
+      return donecb()
+    member_fields <- special_alias_getter()
+    for x in member_fields
+      output.push x
+    return donecb()
+  callback output
+
 export get_field_to_getters = memoizeSingleAsync (callback) ->
   field_info <- get_field_info()
   output = {}
@@ -50,6 +103,8 @@ export get_field_to_getters = memoizeSingleAsync (callback) ->
     if type == 'computed'
       output[field] = computed_fields[field]
       return donecb()
+    if type == 'special_alias'
+      return donecb()
     console.log "field #{field} has unknown type #{type}"
     return donecb()
   callback output
@@ -65,10 +120,14 @@ export get_field_to_getters = memoizeSingleAsync (callback) ->
   callback output
   */
 
+export getcomp = (fieldname, callback) ->
+  computed_fields[fieldname](callback)
+
 export getfield = (fieldname, callback) ->
   field_getters <- get_field_to_getters()
   field_getter = field_getters[fieldname]
   if not field_getter?
+    console.log 'unknown field name: ' + fieldname
     callback()
     return
   val <- field_getter()
@@ -76,7 +135,8 @@ export getfield = (fieldname, callback) ->
 
 export getfields = (fieldname_list, callback) ->
   output = {}
-  <- async.eachSeries fieldname_list, (name, ncallback) ->
+  real_fieldname_list <- resolve_aliases fieldname_list
+  <- async.eachSeries real_fieldname_list, (name, ncallback) ->
     val <- getfield name
     output[name] = val
     ncallback()

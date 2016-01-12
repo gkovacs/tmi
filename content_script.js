@@ -52,6 +52,7 @@
     ndiv.id = 'autosurvey_content_script_loaded';
     return document.body.appendChild(ndiv);
   })();
+  console.log('content_script loaded');
   sendBackground = function(type, data, callback){
     return chrome.runtime.sendMessage({
       type: type,

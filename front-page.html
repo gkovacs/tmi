@@ -1,7 +1,7 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
 <link rel="import" href="exp-description.html">
 <link rel="import" href="bower_components/paper-button/paper-button.html">
-
+<link rel="import" href="experiment-button.html">
 
 <dom-module id="front-page">
   <style>
@@ -84,7 +84,14 @@
 
       <div class="flexcontainer">
         <template is="dom-repeat" items="{{experiment_list}}" as="experiment">
-          <div class="experimentbox">
+          <experiment-button
+            title="{{experiment.title}}"
+            icon="{{experiment.icon}}"
+            available="{{experiment.available}}"
+            link="{{experiment.link}}"
+          ></experiment-button>
+          <!--
+          <div class="experimentbox" on-click="boxclicked">
             <div style="position: relative">
               <div style="padding: 10px">
                 <div style="position: relative; height: 150px">
@@ -104,6 +111,7 @@
               </div>
             </div>
           </div>
+          -->
         </template>
       </div>
       <!--

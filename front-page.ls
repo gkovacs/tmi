@@ -18,11 +18,13 @@ Polymer {
           title: 'How addicted am I to email?'
           icon: 'email_icon.svg'
           available: '2 weeks'
+          link: 'emailsurvey.html'
         }
         {
           title: 'How addicted am I to social media?'
           icon: 'facebook_icon.svg'
           available: '2 weeks'
+          link: 'sample.html'
         }
         {
           title: 'Who is more sexist: me or my friends?'
@@ -92,6 +94,10 @@ Polymer {
       ]
     }
   }
+  boxclicked: (evt, obj)->
+    console.log evt
+    console.log obj
+    window.open '/emailsurvey.html'
   /*
   properties: {
     experiment_list: Array

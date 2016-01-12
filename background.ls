@@ -219,3 +219,80 @@ chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
     # if requestId? # response requested
     #  chrome.tabs.sendMessage tabId, {event: 'backgroundresponse', requestId, response}
   return true
+
+export page_to_time_spent_info = {}
+
+/*
+add_time_spent = (url, time) ->
+  if not page_to_time_spent[url]?
+    page_to_time_spent[url] = time
+  else
+    page_to_time_spent[url] += time
+*/
+
+current_page_info = {url: '', start: Date.now()}
+
+add_new_session = (url) ->
+  if not page_to_time_spent_info[url]?
+    page_to_time_spent_info[url] = []
+  page_to_time_spent_info[url].push {url, start: Date.now()}
+  current_page_info := page_to_time_spent_info[url][*-1]
+
+chrome.idle.onStateChanged.addListener (newstate) ->
+  console.log 'idle stateChanged: ' + newstate
+  if newstate == 'idle'
+    current_page_info.idle = Date.now()
+  else if newstate == 'locked'
+    current_page_info.locked = Date.now()
+  else if newstate == 'active'
+    add_new_session current_page_info.url
+
+activate_url = (url) ->
+  if url == current_page_info.url
+    if is_page_info_active(current_page_info)
+      return
+  add_new_session url
+
+total_time_spent_page_info = (page_info) ->
+  end_types = <[idle locked unfocused]>
+  end_time = Date.now()
+  for x in end_types
+    if page_info[x]?
+      end_time = Math.min(end_time, page_info[x])
+  return end_time
+
+is_page_info_active = (page_info) ->
+  end_types = <[idle locked unfocused]>
+  for x in end_types
+    if page_info[x]?
+      return false
+  return true
+
+chrome.tabs.onUpdated.addListener (tabid, changeinfo, tab) ->
+  console.log 'tabs updated: ' + tabid
+  console.log changeinfo
+  console.log tab
+  {url} = tab
+  activate_url url
+
+chrome.tabs.onActivated.addListener (tabinfo) ->
+  console.log 'active tabs changed:'
+  console.log tabinfo
+  tab <- chrome.tabs.get tabinfo.tabId
+  activate_url tab.url
+
+chrome.windows.onFocusChanged.addListener (windowid) ->
+  console.log 'focused window is:'
+  console.log windowid
+  active_tabs <- chrome.tabs.query {active: true, lastFocusedWindow: true}
+  console.log active_tabs
+  if active_tabs.length == 0
+    current_page_info.unfocused = Date.now()
+  else
+    url = active_tabs[0].url
+    add_new_session url
+  # Will be chrome.windows.WINDOW_ID_NONE if all chrome windows have lost focus.
+
+setInterval ->
+  console.log current_page_info
+, 2000

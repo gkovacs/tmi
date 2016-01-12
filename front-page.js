@@ -16,11 +16,13 @@
           }, {
             title: 'How addicted am I to email?',
             icon: 'email_icon.svg',
-            available: '2 weeks'
+            available: '2 weeks',
+            link: 'emailsurvey.html'
           }, {
             title: 'How addicted am I to social media?',
             icon: 'facebook_icon.svg',
-            available: '2 weeks'
+            available: '2 weeks',
+            link: 'sample.html'
           }, {
             title: 'Who is more sexist: me or my friends?',
             icon: 'sexism_icon.svg',
@@ -76,6 +78,11 @@
           }
         ]
       }
+    },
+    boxclicked: function(evt, obj){
+      console.log(evt);
+      console.log(obj);
+      return window.open('/emailsurvey.html');
     }
     /*
     properties: {

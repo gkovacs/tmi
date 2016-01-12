@@ -41,7 +41,7 @@ do ->
   ndiv.id = 'autosurvey_content_script_loaded'
   document.body.appendChild(ndiv)
 
-# console.log 'content_script loaded'
+console.log 'content_script loaded'
 
 sendBackground = (type, data, callback) ->
   chrome.runtime.sendMessage {type, data}, (response) ->

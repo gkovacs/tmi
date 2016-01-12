@@ -1,0 +1,27 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="exp-description.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="experiment-button.html">
+
+<dom-module id="sensation-seeking-scale">
+  <style>
+  </style>
+  <template>
+    <h3>Sensation Seeking Scale Form V</h3>
+<p><b>Directions</b>:  Each of the items below contains two choices, A and B.  Please indicate (circle) on your answer sheet which of the choices most describes your likes or the way you feel.  In some cases you may find items in which both choices describe your likes or feelings.  Please choose the one which better describes your likes or feelings.</p>
+<p>In some cases you may find items in which you do not like either choice.  In these cases mark the choice you dislike least.  Please try to answer each item.</p>
+<p>It is important you respond to all items with only one choice, A or B.  We are interested only in your likes or feeling, not in how others feel about these things or how one is supposed to feel.  There are no right or wrong answers as in other kinds of tests.  Be frank and give your honest appraisal of yourself.</p>
+    <br>
+    <template is="dom-repeat" items="{{sssv_questions}}">
+    <div>
+      <div><span>{{plusone(index)}}</span><span>)</span></div>
+      <paper-radio-group>
+        <paper-radio-button name="A">{{item.first}}</paper-radio-button><br>
+        <paper-radio-button name="B">{{item.second}}</paper-radio-button>
+      </paper-radio-group>
+    </div>
+    <br>
+    </template>
+  </template>
+  <script src="sensation-seeking-scale.js"></script>
+</dom-module>
