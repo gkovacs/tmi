@@ -18,7 +18,9 @@ Polymer {
       chrome.webstore.install(
         url='https://chrome.google.com/webstore/detail/mogonddkdjlindkbpkagjfkbckgjjmem',
         successCallback= ->
-          swal 'extension install finished'
+          #swal 'extension install finished'
+          console.log 'extension install finished'
+          window.location.reload()
       )
     else
       window.open('https://chrome.google.com/webstore/detail/mogonddkdjlindkbpkagjfkbckgjjmem')

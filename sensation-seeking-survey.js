@@ -30,7 +30,8 @@
       var url, successCallback;
       if ((typeof chrome != 'undefined' && chrome !== null) && chrome.webstore != null && chrome.webstore.install != null) {
         return chrome.webstore.install(url = 'https://chrome.google.com/webstore/detail/mogonddkdjlindkbpkagjfkbckgjjmem', successCallback = function(){
-          return swal('extension install finished');
+          console.log('extension install finished');
+          return window.location.reload();
         });
       } else {
         return window.open('https://chrome.google.com/webstore/detail/mogonddkdjlindkbpkagjfkbckgjjmem');
