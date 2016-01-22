@@ -21,6 +21,8 @@ Polymer {
     console.log 'sendMessage called'
     # once content script is loaded
     once_available '#autosurvey_content_script_loaded', ->
+      console.log 'auotfill-data calling extension-loaded'
+      self.fire 'extension-loaded', {}
       sendExtension 'requestfields', {fieldnames: newfields, pagename: self.pagename}, (response) ->
         console.log 'response received from sendMessage'
         self.data = response

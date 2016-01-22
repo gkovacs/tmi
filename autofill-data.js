@@ -23,6 +23,8 @@
       console.log(newfields);
       console.log('sendMessage called');
       return once_available('#autosurvey_content_script_loaded', function(){
+        console.log('auotfill-data calling extension-loaded');
+        self.fire('extension-loaded', {});
         return sendExtension('requestfields', {
           fieldnames: newfields,
           pagename: self.pagename

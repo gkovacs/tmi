@@ -1,10 +1,22 @@
 Polymer {
   is: 'sensation-seeking-survey'
+  extensionloaded: ->
+    self = this
+    console.log 'extension loaded in sensation-seeking-survey'
+    #swal 'extension loaded'
+    self.$$('#showifnoext').style.display = 'none'
+    self.$$('#showifrequestdata').style.display = ''
   ready: ->
     self = this
+    this.$$('#autofill').fields="chrome_history_timespent_domain,chrome_history_pages,chrome_history_visits"
+    #this.$$('#autofill').addEventListener 'extension-loaded', ->
+    #  self.$$('#showifnoext').style.display = 'none'
+    #  self.$$('#hideifnoext').style.display = ''
     this.$$('#autofill').addEventListener 'have-data', (results) ->
       self.$$('#showifnoext').style.display = 'none'
-      self.$$('#hideifnoext').style.display = ''
+      self.$$('#showifrequestdata').style.display = 'none'
+      self.$$('#showifloading').style.display = 'none'
+      self.$$('#showifhavedata').style.display = ''
       #console.log 'have-data callback'
       #console.log results.detail
       data = [[k, v] for k,v of results.detail.chrome_history_timespent_domain]

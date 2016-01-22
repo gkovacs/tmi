@@ -12,8 +12,14 @@
     <div id="showifnoext">
     <paper-button raised style="background: #4285f4; color: #fff" on-click="installextension">Install the Extension</paper-button>
     </div>
-    <div id="hideifnoext" style="display: none">
-      <autofill-data id="autofill" pagename="Sensation Seeking Survey" fields="chrome_history_timespent_domain,chrome_history_pages,chrome_history_visits"></autofill-data>
+    <div id="showifrequestdata" style="display: none">
+    Thanks for installing our extension. Now please provide your browsing data. <a href="javascript:window.location.reload()">Refresh this page</a> if you denied the request.
+    </div>
+    <div id="showifloading" style="display: none">
+    Loading, please wait this can take up to a minute
+    </div>
+    <div id="showifhavedata" style="display: none">
+      <autofill-data id="autofill" on-extension-loaded="extensionloaded" pagename="Sensation Seeking Survey"></autofill-data>
       <!--<slacking-website-use id="ratedomains"></slacking-website-use>-->
       <!--<recreational-website-use id="ratedomains"></recreational-website-use>-->
       <!--<unplanned-media-consumption id="ratedomains"></unplanned-media-consumption>-->

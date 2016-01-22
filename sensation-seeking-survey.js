@@ -1,13 +1,23 @@
 (function(){
   Polymer({
     is: 'sensation-seeking-survey',
+    extensionloaded: function(){
+      var self;
+      self = this;
+      console.log('extension loaded in sensation-seeking-survey');
+      self.$$('#showifnoext').style.display = 'none';
+      return self.$$('#showifrequestdata').style.display = '';
+    },
     ready: function(){
       var self;
       self = this;
+      this.$$('#autofill').fields = "chrome_history_timespent_domain,chrome_history_pages,chrome_history_visits";
       return this.$$('#autofill').addEventListener('have-data', function(results){
         var data, res$, k, ref$, v, top_sites;
         self.$$('#showifnoext').style.display = 'none';
-        self.$$('#hideifnoext').style.display = '';
+        self.$$('#showifrequestdata').style.display = 'none';
+        self.$$('#showifloading').style.display = 'none';
+        self.$$('#showifhavedata').style.display = '';
         res$ = [];
         for (k in ref$ = results.detail.chrome_history_timespent_domain) {
           v = ref$[k];
