@@ -2,8 +2,13 @@
   Polymer({
     is: 'sensation-seeking-scale',
     properties: {
+      answers: {
+        type: Object,
+        value: {}
+      },
       sssv_questions: {
         type: Array,
+        observer: 'sssv_questionsChanged',
         value: [
           {
             first: 'I like "wild" uninhibited parties',
@@ -129,8 +134,58 @@
         ]
       }
     },
+    sssv_questionsChanged: function(newval){
+      var x;
+      return this.answers = (function(){
+        var i$, ref$, len$, results$ = [];
+        for (i$ = 0, len$ = (ref$ = newval).length; i$ < len$; ++i$) {
+          x = ref$[i$];
+          results$.push(null);
+        }
+        return results$;
+      }());
+    },
     plusone: function(x){
       return x + 1;
+    },
+    getqclass: function(idx){
+      var idxp;
+      idxp = idx + 1;
+      if ([2, 5, 7, 8, 15, 24, 27, 31, 34, 39].indexOf(idxp) !== -1) {
+        return 'boredom';
+      }
+      if ([1, 12, 13, 25, 29, 30, 32, 33, 35, 36].indexOf(idxp) !== -1) {
+        return 'disinhibition';
+      }
+      if ([4, 6, 9, 10, 14, 18, 19, 22, 26, 37].indexOf(idxp) !== -1) {
+        return 'experience';
+      }
+      if ([3, 11, 16, 17, 20, 21, 23, 28, 38, 40].indexOf(idxp) !== -1) {
+        return 'thrill';
+      }
+      console.log('getqclass for idxp has unknown class: ' + idxp);
+      return 'unknown';
+    },
+    gethighchoice: function(idx){
+      var idxp;
+      idxp = idx + 1;
+      if ([2, 7, 15, 27, 31, 12, 13, 25, 30, 33, 35, 4, 10, 19, 26, 37, 11, 20, 21, 38, 40].indexOf(idxp) !== -1) {
+        return 'B';
+      }
+      return 'A';
+    },
+    radioGroupChanged: function(evt){
+      var selected_text;
+      selected_text = evt.target.atext;
+      if (evt.target.selected === 'B') {
+        selected_text = evt.target.btext;
+      }
+      return this.answers[evt.target.qidx] = {
+        choice: evt.target.selected,
+        text: selected_text,
+        'class': evt.target.qclass,
+        high: evt.target.highchoice
+      };
     }
   });
 }).call(this);

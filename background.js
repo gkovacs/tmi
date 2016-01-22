@@ -274,6 +274,8 @@
       return;
     }
     message_handler(data, function(response){
+      console.log('response is:');
+      console.log(response);
       if (sendResponse != null) {
         return sendResponse(response);
       }

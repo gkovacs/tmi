@@ -1,8 +1,13 @@
 Polymer {
   is: 'sensation-seeking-scale'
   properties: {
+    answers: {
+      type: Object
+      value: {}
+    }
     sssv_questions: {
       type: Array
+      observer: 'sssv_questionsChanged'
       value: [
         {
           first: 'I like "wild" uninhibited parties'
@@ -167,5 +172,35 @@ Polymer {
       ]
     }
   }
+  sssv_questionsChanged: (newval) ->
+    this.answers = [null for x in newval]
   plusone: (x) -> x+1
+  getqclass: (idx) ->
+    idxp = idx + 1
+    if [2,5,7,8,15,24,27,31,34,39].indexOf(idxp) != -1
+      return 'boredom'
+    if [1,12,13,25,29,30,32,33,35,36].indexOf(idxp) != -1
+      return 'disinhibition'
+    if [4,6,9,10,14,18,19,22,26,37].indexOf(idxp) != -1
+      return 'experience'
+    if [3,11,16,17,20,21,23,28,38,40].indexOf(idxp) != -1
+      return 'thrill'
+    console.log 'getqclass for idxp has unknown class: ' + idxp
+    return 'unknown'
+  gethighchoice: (idx) ->
+    idxp = idx + 1
+    if [2,7,15,27,31,12,13,25,30,33,35,4,10,19,26,37,11,20,21,38,40].indexOf(idxp) != -1
+      return 'B'
+    return 'A'
+  radioGroupChanged: (evt) ->
+    selected_text = evt.target.atext
+    if evt.target.selected == 'B'
+      selected_text = evt.target.btext
+    this.answers[evt.target.qidx] = {
+      choice: evt.target.selected
+      text: selected_text
+      class: evt.target.qclass
+      high: evt.target.highchoice
+    }
+    #console.log this.answers[evt.target.qidx]
 }

@@ -192,8 +192,8 @@ chrome.runtime.onMessageExternal.addListener (request, sender, sendResponse) ->
     return
   #tabId = sender.tab.id
   message_handler data, (response) ~>
-    #console.log 'response is:'
-    #console.log response
+    console.log 'response is:'
+    console.log response
     if sendResponse?
       sendResponse response
   return true # async response

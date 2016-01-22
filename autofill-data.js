@@ -29,6 +29,8 @@
         }, function(response){
           console.log('response received from sendMessage');
           self.data = response;
+          console.log('self.data set');
+          console.log(self.data);
           return sendExtension('get_field_descriptions', newfields, function(field_descriptions){
             self.field_descriptions = field_descriptions;
             return self.fire('have-data', response);
