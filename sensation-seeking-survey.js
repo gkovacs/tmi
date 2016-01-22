@@ -17,7 +17,7 @@
         top_sites = prelude.map(function(it){
           return it[0];
         })(
-        prelude.take(5)(
+        prelude.take(40)(
         prelude.reverse(
         prelude.sortBy(function(it){
           return it[1];
