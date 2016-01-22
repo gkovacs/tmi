@@ -6,8 +6,8 @@
       self = this;
       return this.$$('#autofill').addEventListener('have-data', function(results){
         var data, res$, k, ref$, v, top_sites;
-        console.log('have-data callback');
-        console.log(results.detail);
+        self.$$('#showifnoext').style.display = 'none';
+        self.$$('#hideifnoext').style.display = '';
         res$ = [];
         for (k in ref$ = results.detail.chrome_history_timespent_domain) {
           v = ref$[k];
@@ -25,6 +25,14 @@
         console.log(top_sites);
         return self.$$('#ratedomains').domains = top_sites;
       });
+    },
+    installextension: function(){
+      var url;
+      if ((typeof chrome != 'undefined' && chrome !== null) && chrome.webstore != null && chrome.webstore.install != null) {
+        return chrome.webstore.install(url = 'https://chrome.google.com/webstore/detail/mogonddkdjlindkbpkagjfkbckgjjmem');
+      } else {
+        return window.open('https://chrome.google.com/webstore/detail/mogonddkdjlindkbpkagjfkbckgjjmem');
+      }
     },
     submitsurvey: function(){
       var ref$, occupation, hobbies, classifications, sssv_questions, answers, k, v, data, compressed_data;

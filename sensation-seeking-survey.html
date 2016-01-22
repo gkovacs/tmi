@@ -9,14 +9,19 @@
   </style>
   <template>
   <div style="margin-left: 10px">
-    <autofill-data id="autofill" pagename="Sensation Seeking Survey" fields="chrome_history_timespent_domain,chrome_history_pages,chrome_history_visits"></autofill-data>
-    <!--<slacking-website-use id="ratedomains"></slacking-website-use>-->
-    <!--<recreational-website-use id="ratedomains"></recreational-website-use>-->
-    <!--<unplanned-media-consumption id="ratedomains"></unplanned-media-consumption>-->
-    <productive-hobby-website-use id="ratedomains"></productive-hobby-website-use>
-    <sensation-seeking-scale id="surveyquestions"></sensation-seeking-scale>
-    <paper-input label="Any notes or comments?" name="notes" id="notes"></paper-input>
-    <paper-button raised style="background: #4285f4; color: #fff" on-click="submitsurvey">Submit</paper-button>
+    <div id="showifnoext">
+    <paper-button raised style="background: #4285f4; color: #fff" on-click="installextension">Install the Extension</paper-button>
+    </div>
+    <div id="hideifnoext" style="display: none">
+      <autofill-data id="autofill" pagename="Sensation Seeking Survey" fields="chrome_history_timespent_domain,chrome_history_pages,chrome_history_visits"></autofill-data>
+      <!--<slacking-website-use id="ratedomains"></slacking-website-use>-->
+      <!--<recreational-website-use id="ratedomains"></recreational-website-use>-->
+      <!--<unplanned-media-consumption id="ratedomains"></unplanned-media-consumption>-->
+      <productive-hobby-website-use id="ratedomains"></productive-hobby-website-use>
+      <sensation-seeking-scale id="surveyquestions"></sensation-seeking-scale>
+      <paper-input label="Any notes or comments?" name="notes" id="notes"></paper-input>
+      <paper-button raised style="background: #4285f4; color: #fff" on-click="submitsurvey">Submit</paper-button>
+    </div>
   </div>
   </template>
   <script src="sensation-seeking-survey.js"></script>
