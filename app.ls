@@ -1,5 +1,6 @@
 require! {
   express
+  'force-ssl'
 }
 
 LZString = require 'lz-string'
@@ -12,12 +13,20 @@ app = express()
 
 app.set 'port', process.env.PORT ? 8080
 
+if not process.env.PORT?
+  selfSignedHttps = require 'self-signed-https'
+  selfSignedHttps(app).listen(8081, '0.0.0.0')
+  app.listen app.get('port'), '0.0.0.0'
+  forceSsl.https_port = 8081
+  app.use forceSsl
+else
+  app.listen app.get('port'), '0.0.0.0'
+  app.use forceSsl
+
 app.use express.static __dirname
 
 #app.use require('body-parser').json()
 app.use require('body-parser').text({limit: '1000mb'})
-
-app.listen app.get('port'), '0.0.0.0'
 
 app.get '/somefunc', (req, res) ->
   res.send 'hello world'

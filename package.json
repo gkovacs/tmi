@@ -22,6 +22,7 @@
   "dependencies": {
     "body-parser": "^1.14.2",
     "express": "^4.13.4",
+    "force-ssl": "^1.0.5",
     "gulp": "^3.8.5",
     "gulp-changed": "^1.3.0",
     "gulp-cr-lf-replace": "0.0.4",
@@ -32,6 +33,7 @@
     "livescript": "^1.4.0",
     "lz-string": "^1.4.4",
     "mongodb": "^2.1.4",
-    "prelude-ls": "^1.1.2"
+    "prelude-ls": "^1.1.2",
+    "self-signed-https": "^1.0.5"
   }
 }

@@ -1,6 +1,7 @@
 (function(){
-  var express, LZString, MongoClient, mongourl, ref$, app, getMongoDb, getCollection, logsurvey;
+  var express, forceSsl, LZString, MongoClient, mongourl, ref$, app, selfSignedHttps, getMongoDb, getCollection, logsurvey;
   express = require('express');
+  forceSsl = require('force-ssl');
   LZString = require('lz-string');
   MongoClient = require('mongodb').MongoClient;
   mongourl = (ref$ = process.env.MONGOHQ_URL) != null
@@ -10,11 +11,20 @@
       : (ref$ = process.env.MONGOSOUP_URL) != null ? ref$ : 'mongodb://localhost:27017/default';
   app = express();
   app.set('port', (ref$ = process.env.PORT) != null ? ref$ : 8080);
+  if (process.env.PORT == null) {
+    selfSignedHttps = require('self-signed-https');
+    selfSignedHttps(app).listen(8081, '0.0.0.0');
+    app.listen(app.get('port'), '0.0.0.0');
+    forceSsl.https_port = 8081;
+    app.use(forceSsl);
+  } else {
+    app.listen(app.get('port'), '0.0.0.0');
+    app.use(forceSsl);
+  }
   app.use(express['static'](__dirname));
   app.use(require('body-parser').text({
     limit: '1000mb'
   }));
-  app.listen(app.get('port'), '0.0.0.0');
   app.get('/somefunc', function(req, res){
     return res.send('hello world');
   });
