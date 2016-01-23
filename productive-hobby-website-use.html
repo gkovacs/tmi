@@ -16,14 +16,15 @@
     <paper-input label="What is your occupation, or what do you study?" name="occupation" on-change="occupationChanged"></paper-input>
     <paper-input label="What are your primary hobbies and extracurricular activities?" name="hobbies" on-change="hobbiesChanged"></paper-input>
     <br><br>
-    <p><b>Directions</b>: These are the sites that you visit the most. For each site, please indicate whether you use it <b>primarily</b> for purposes related to work/ studying, for hobbies/extracurriculars, or for other reasons like fun and time-wasting.</p><br>
+    <p><b>Directions</b>: These are the sites that you visit the most. For each site, please indicate whether you use it <b>primarily</b> for purposes related to work/ studying, for hobbies/extracurriculars, for fun and time-wasting, or for other purposes (ie, errands and shopping).</p><br>
     <template is="dom-repeat" items="{{domains}}">
     <div>
       <div>{{item}}</div>
       <paper-radio-group sitename="{{item}}" on-paper-radio-group-changed="radioGroupChanged">
         <paper-radio-button name="work">Work/Studying</paper-radio-button>
         <paper-radio-button name="hobby">Hobby/Extracurricular</paper-radio-button>
-        <paper-radio-button name="fun">Fun/Time-wasting/Other</paper-radio-button>
+        <paper-radio-button name="fun">Fun/Time-wasting</paper-radio-button>
+        <paper-radio-button name="other">Other</paper-radio-button>        
       </paper-radio-group>
     </div><br>
     </template>
