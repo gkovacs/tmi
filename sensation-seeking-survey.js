@@ -97,7 +97,9 @@
           localtime: new Date().toString(),
           initial_page_loaded_time: window.initial_page_loaded_time,
           extension_loaded_time: window.extension_loaded_time,
-          data_loaded_time: window.data_loaded_time
+          data_loaded_time: window.data_loaded_time,
+          username: window.username,
+          userid: window.userid
         };
         console.log('compressing data');
         compressed_data = LZString.compressToEncodedURIComponent(JSON.stringify(data));
