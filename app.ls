@@ -1,5 +1,7 @@
 require! {
   express
+  https
+  fs
   'force-ssl'
 }
 
@@ -11,17 +13,18 @@ mongourl = process.env.MONGOHQ_URL ? process.env.MONGOLAB_URI ? process.env.MONG
 
 app = express()
 
-app.set 'port', process.env.PORT ? 8080
+app.set 'port', process.env.PORT ? 80
 
 if not process.env.PORT?
-  selfSignedHttps = require 'self-signed-https'
-  selfSignedHttps(app).listen(8081, '0.0.0.0')
+  #selfSignedHttps = require 'self-signed-https'
+  #selfSignedHttps(app).listen(443, '0.0.0.0')
+  https.createServer({key: fs.readFileSync('/home/geza2/ssl.key'), cert: fs.readFileSync('/home/geza2/ssl.crt'), ca: fs.readFileSync('/home/geza2/intermediate.crt'), requestCert: false, rejectUnauthorized: false}, app).listen(443, '0.0.0.0')
   app.listen app.get('port'), '0.0.0.0'
-  forceSsl.https_port = 8081
+  forceSsl.https_port = 443
   app.use forceSsl
 else
   app.listen app.get('port'), '0.0.0.0'
-  app.use forceSsl
+  #app.use forceSsl
 
 app.use express.static __dirname
 
