@@ -29,10 +29,16 @@
       return results$;
     },
     occupationChanged: function(evt){
-      return this.occupation = evt.target.value;
+      this.occupation = evt.target.value;
+      if (this.occupation != null && this.occupation.length > 0) {
+        return $('.worksupp').text('(' + this.occupation + ')');
+      }
     },
     hobbiesChanged: function(evt){
-      return this.hobbies = evt.target.value;
+      this.hobbies = evt.target.value;
+      if (this.hobbies != null && this.hobbies.length > 0) {
+        return $('.hobbysupp').text('(' + this.hobbies + ')');
+      }
     },
     radioGroupChanged: function(evt){
       return this.classifications[evt.target.sitename] = evt.target.selected;

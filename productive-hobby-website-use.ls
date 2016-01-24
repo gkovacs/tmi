@@ -24,12 +24,14 @@ Polymer {
       this.classifications[x] = null
   occupationChanged: (evt) ->
     this.occupation = evt.target.value
-    #if this.occupation? and this.occupation.length > 0
+    if this.occupation? and this.occupation.length > 0
+      $('.worksupp').text('(' + this.occupation + ')')
     #  $('.workradio').tooltipster({content: this.occupation, position: 'top-right'})
     #  $('.workradio').tooltipster('content', this.occupation)
   hobbiesChanged: (evt) ->
     this.hobbies = evt.target.value
-    #if this.hobbies? and this.hobbies.length > 0
+    if this.hobbies? and this.hobbies.length > 0
+      $('.hobbysupp').text('(' + this.hobbies + ')')
     #  $('.hobbyradio').tooltipster({content: this.hobbies, position: 'top-right'})
     #  $('.hobbyradio').tooltipster('content', this.hobbies)
   radioGroupChanged: (evt) ->
