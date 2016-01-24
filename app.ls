@@ -13,18 +13,27 @@ mongourl = process.env.MONGOHQ_URL ? process.env.MONGOLAB_URI ? process.env.MONG
 
 app = express()
 
-app.set 'port', process.env.PORT ? 80
-
-if not process.env.PORT?
-  #selfSignedHttps = require 'self-signed-https'
-  #selfSignedHttps(app).listen(443, '0.0.0.0')
-  https.createServer({key: fs.readFileSync('/home/geza2/ssl.key'), cert: fs.readFileSync('/home/geza2/ssl.crt'), ca: fs.readFileSync('/home/geza2/intermediate.crt'), requestCert: false, rejectUnauthorized: false}, app).listen(443, '0.0.0.0')
-  app.listen app.get('port'), '0.0.0.0'
+if process.env.PORT? # on heroku
+  app.listen process.env.PORT, '0.0.0.0'
+  app.use forceSsl
+else if fs.existsSync('/var/ssl_tmi/ssl.key')
+  https_options = {
+    key: fs.readFileSync('/var/ssl_tmi/ssl.key')
+    cert: fs.readFileSync('/var/ssl_tmi/ssl.crt')
+    ca: fs.readFileSync('/var/ssl_tmi/intermediate.crt')
+    requestCert: false
+    rejectUnauthorized: false
+  }
+  https.createServer(https_options, app).listen(443, '0.0.0.0')
+  app.listen 80, '0.0.0.0'
   forceSsl.https_port = 443
   app.use forceSsl
 else
-  app.listen app.get('port'), '0.0.0.0'
-  #app.use forceSsl
+  selfSignedHttps = require 'self-signed-https'
+  selfSignedHttps(app).listen(8081, '0.0.0.0')
+  app.listen 8080, '0.0.0.0'
+  forceSsl.https_port = 8081
+  app.use forceSsl
 
 app.use express.static __dirname
 

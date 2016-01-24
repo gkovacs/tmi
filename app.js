@@ -1,5 +1,5 @@
 (function(){
-  var express, https, fs, forceSsl, LZString, MongoClient, mongourl, ref$, app, getMongoDb, getCollection, logsurvey;
+  var express, https, fs, forceSsl, LZString, MongoClient, mongourl, ref$, app, https_options, selfSignedHttps, getMongoDb, getCollection, logsurvey;
   express = require('express');
   https = require('https');
   fs = require('fs');
@@ -12,20 +12,27 @@
       ? ref$
       : (ref$ = process.env.MONGOSOUP_URL) != null ? ref$ : 'mongodb://localhost:27017/default';
   app = express();
-  app.set('port', (ref$ = process.env.PORT) != null ? ref$ : 80);
-  if (process.env.PORT == null) {
-    https.createServer({
-      key: fs.readFileSync('/home/geza2/ssl.key'),
-      cert: fs.readFileSync('/home/geza2/ssl.crt'),
-      ca: fs.readFileSync('/home/geza2/intermediate.crt'),
+  if (process.env.PORT != null) {
+    app.listen(process.env.PORT, '0.0.0.0');
+    app.use(forceSsl);
+  } else if (fs.existsSync('/var/ssl_tmi/ssl.key')) {
+    https_options = {
+      key: fs.readFileSync('/var/ssl_tmi/ssl.key'),
+      cert: fs.readFileSync('/var/ssl_tmi/ssl.crt'),
+      ca: fs.readFileSync('/var/ssl_tmi/intermediate.crt'),
       requestCert: false,
       rejectUnauthorized: false
-    }, app).listen(443, '0.0.0.0');
-    app.listen(app.get('port'), '0.0.0.0');
+    };
+    https.createServer(https_options, app).listen(443, '0.0.0.0');
+    app.listen(80, '0.0.0.0');
     forceSsl.https_port = 443;
     app.use(forceSsl);
   } else {
-    app.listen(app.get('port'), '0.0.0.0');
+    selfSignedHttps = require('self-signed-https');
+    selfSignedHttps(app).listen(8081, '0.0.0.0');
+    app.listen(8080, '0.0.0.0');
+    forceSsl.https_port = 8081;
+    app.use(forceSsl);
   }
   app.use(express['static'](__dirname));
   app.use(require('body-parser').text({

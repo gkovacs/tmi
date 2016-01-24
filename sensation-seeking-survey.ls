@@ -2,21 +2,26 @@ Polymer {
   is: 'sensation-seeking-survey'
   extensionloaded: ->
     self = this
+    window.extension_loaded_time = Date.now()
     console.log 'extension loaded in sensation-seeking-survey'
     #swal 'extension loaded'
     self.$$('#showifnoext').style.display = 'none'
     self.$$('#showifrequestdata').style.display = ''
+    start_spinner()
   ready: ->
+    window.initial_page_loaded_time = Date.now()
     self = this
     this.$$('#autofill').fields="chrome_history_timespent_domain,chrome_history_pages,chrome_history_visits"
     #this.$$('#autofill').addEventListener 'extension-loaded', ->
     #  self.$$('#showifnoext').style.display = 'none'
     #  self.$$('#hideifnoext').style.display = ''
     this.$$('#autofill').addEventListener 'have-data', (results) ->
+      window.data_loaded_time = Date.now()
       self.$$('#showifnoext').style.display = 'none'
       self.$$('#showifrequestdata').style.display = 'none'
       self.$$('#showifloading').style.display = 'none'
       self.$$('#showifhavedata').style.display = ''
+      end_spinner()
       #console.log 'have-data callback'
       #console.log results.detail
       data = [[k, v] for k,v of results.detail.chrome_history_timespent_domain]
@@ -37,6 +42,7 @@ Polymer {
     else
       window.open('https://chrome.google.com/webstore/detail/mogonddkdjlindkbpkagjfkbckgjjmem')
   submitsurvey: ->
+    self = this
     {occupation, hobbies, classifications} = this.$$('#ratedomains')
     {sssv_questions, answers} = this.$$('#surveyquestions')
     if not (window.skipchecks? and window.skipchecks)
@@ -54,36 +60,46 @@ Polymer {
         if v == null
           swal 'Please answer survey question ' + (parseInt(k)+1)
           return
-    data = {
-      autofill: this.$$('#autofill').data
-      notes: this.$$('#notes').value
-      occupation
-      hobbies
-      classifications
-      sssv_questions
-      answers
-      surveyname: 'sensationseeking1'
-      time: Date.now()
-      localtime: new Date().toString()
-    }
-    console.log 'compressing data'
-    compressed_data = LZString.compressToEncodedURIComponent JSON.stringify data
-    console.log 'posting data'
-    $.ajax {
-      type: 'POST'
-      url: '/logsurvey_compressed'
-      contentType: 'text/plain'
-      data: compressed_data
-      #contentType: 'application/json'
-      #dataType: 'json'
-      #data: JSON.stringify(data)
-      error: (err) ->
-        console.log 'have error'
-        console.log err
-      complete: (a) ->
-        console.log a
-        console.log 'finished posting survey results'
-        swal 'finished posting survey results'
-    }
+    start_spinner()
+    setTimeout ->
+      data = {
+        autofill: self.$$('#autofill').data
+        notes: self.$$('#notes').value
+        occupation
+        hobbies
+        classifications
+        sssv_questions
+        answers
+        surveyname: 'sensationseeking1'
+        time: Date.now()
+        localtime: new Date().toString()
+        initial_page_loaded_time: window.initial_page_loaded_time
+        extension_loaded_time: window.extension_loaded_time
+        data_loaded_time: window.data_loaded_time
+
+      }
+      console.log 'compressing data'
+      compressed_data = LZString.compressToEncodedURIComponent JSON.stringify data
+      console.log 'posting data'
+      $.ajax {
+        type: 'POST'
+        url: '/logsurvey_compressed'
+        contentType: 'text/plain'
+        data: compressed_data
+        #contentType: 'application/json'
+        #dataType: 'json'
+        #data: JSON.stringify(data)
+        error: (err) ->
+          console.log 'have error'
+          console.log err
+          end_spinner()
+          swal err
+        complete: (a) ->
+          end_spinner()
+          console.log a
+          console.log 'finished posting survey results'
+          swal 'finished posting survey results. thanks for participating'
+      }
+    , 0
 }
 
