@@ -45,7 +45,6 @@ app.get '/somefunc', (req, res) ->
 
 app.post '/logsurvey_compressed', (req, res) ->
   data_compressed = req.body
-  console.log data_compressed
   data = JSON.parse LZString.decompressFromEncodedURIComponent data_compressed
   {surveyname} = data
   if not surveyname?
@@ -53,6 +52,13 @@ app.post '/logsurvey_compressed', (req, res) ->
     return
   data.ip = req.ip
   logsurvey data_compressed, surveyname, ->
+    res.send 'done'
+
+app.post '/addlog', (req, res) ->
+  data = req.body
+  if typeof(data) == 'string'
+    data = JSON.parse data
+  addlog data, ->
     res.send 'done'
 
 /*
@@ -91,6 +97,13 @@ app.get '/listsurvey', (req, res) ->
       res.send JSON.stringify(output, null, 2)
       db.close()
 
+app.get '/viewlogs', (req, res) ->
+  get-collection 'logs', (collection, db) ->
+    collection.find({}).toArray (err, results) ->
+      res.set 'Content-Type', 'text/plain'
+      res.send JSON.stringify(results, null, 2)
+      db.close()
+
 get-mongo-db = (callback) ->
   #MongoClient.connect mongourl, {
   #  auto_reconnect: true
@@ -107,10 +120,20 @@ get-collection = (collection_name, callback) ->
   get-mongo-db (db) ->
     callback db.collection(collection_name), db
 
+addlog = (data, callback) ->
+  get-collection 'logs', (collection, db) ->
+    collection.insert {data: data_compressed}, (err, docs) ->
+      if err?
+        console.log 'error upon insertion'
+        console.log err
+      else
+        console.log 'insertion done'
+        if callback?
+          callback()
+      db.close()
+
 logsurvey = (data_compressed, surveyname, callback) ->
   get-collection surveyname, (collection, db) ->
-    console.log 'have collection:'
-    console.log collection
     collection.insert {data: data_compressed}, (err, docs) ->
       if err?
         console.log 'error upon insertion'

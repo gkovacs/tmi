@@ -1,5 +1,5 @@
 (function(){
-  var express, https, fs, forceSsl, LZString, MongoClient, mongourl, ref$, app, https_options, selfSignedHttps, getMongoDb, getCollection, logsurvey;
+  var express, https, fs, forceSsl, LZString, MongoClient, mongourl, ref$, app, https_options, selfSignedHttps, getMongoDb, getCollection, addlog, logsurvey;
   express = require('express');
   https = require('https');
   fs = require('fs');
@@ -44,7 +44,6 @@
   app.post('/logsurvey_compressed', function(req, res){
     var data_compressed, data, surveyname;
     data_compressed = req.body;
-    console.log(data_compressed);
     data = JSON.parse(LZString.decompressFromEncodedURIComponent(data_compressed));
     surveyname = data.surveyname;
     if (surveyname == null) {
@@ -53,6 +52,16 @@
     }
     data.ip = req.ip;
     return logsurvey(data_compressed, surveyname, function(){
+      return res.send('done');
+    });
+  });
+  app.post('/addlog', function(req, res){
+    var data;
+    data = req.body;
+    if (typeof data === 'string') {
+      data = JSON.parse(data);
+    }
+    return addlog(data, function(){
       return res.send('done');
     });
   });
@@ -98,6 +107,15 @@
       });
     });
   });
+  app.get('/viewlogs', function(req, res){
+    return getCollection('logs', function(collection, db){
+      return collection.find({}).toArray(function(err, results){
+        res.set('Content-Type', 'text/plain');
+        res.send(JSON.stringify(results, null, 2));
+        return db.close();
+      });
+    });
+  });
   getMongoDb = function(callback){
     return MongoClient.connect(mongourl, function(err, db){
       if (err) {
@@ -112,10 +130,26 @@
       return callback(db.collection(collection_name), db);
     });
   };
+  addlog = function(data, callback){
+    return getCollection('logs', function(collection, db){
+      return collection.insert({
+        data: data_compressed
+      }, function(err, docs){
+        if (err != null) {
+          console.log('error upon insertion');
+          console.log(err);
+        } else {
+          console.log('insertion done');
+          if (callback != null) {
+            callback();
+          }
+        }
+        return db.close();
+      });
+    });
+  };
   logsurvey = function(data_compressed, surveyname, callback){
     return getCollection(surveyname, function(collection, db){
-      console.log('have collection:');
-      console.log(collection);
       return collection.insert({
         data: data_compressed
       }, function(err, docs){

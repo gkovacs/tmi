@@ -27,3 +27,14 @@ export start_spinner = ->
 
 export end_spinner = ->
   $('#spinoverlay').spin(false)
+
+export addlog = (data) ->
+  data = {} <<< data
+  if window.username?
+    data.username = window.username
+  if window.userid?
+    data.userid = window.userid
+  data.time = Date.now()
+  data.localtime = new Date().toString()
+  # ip address
+  # post the request

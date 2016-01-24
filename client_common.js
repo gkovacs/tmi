@@ -1,5 +1,5 @@
 (function(){
-  var open_page, open_survey, return_home, view_data, start_spinner, end_spinner, out$ = typeof exports != 'undefined' && exports || this;
+  var open_page, open_survey, return_home, view_data, start_spinner, end_spinner, addlog, out$ = typeof exports != 'undefined' && exports || this;
   out$.open_page = open_page = function(page_name, options){
     var newpage, k, v;
     newpage = $("<" + page_name + ">");
@@ -33,4 +33,20 @@
   out$.end_spinner = end_spinner = function(){
     return $('#spinoverlay').spin(false);
   };
+  out$.addlog = addlog = function(data){
+    data = import$({}, data);
+    if (window.username != null) {
+      data.username = window.username;
+    }
+    if (window.userid != null) {
+      data.userid = window.userid;
+    }
+    data.time = Date.now();
+    return data.localtime = new Date().toString();
+  };
+  function import$(obj, src){
+    var own = {}.hasOwnProperty;
+    for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+    return obj;
+  }
 }).call(this);
