@@ -22,33 +22,74 @@
         event: 'pageload'
       });
       return this.$$('#autofill').addEventListener('have-data', function(results){
-        var data, res$, k, ref$, v, top_sites;
+        var data, compressed_data;
         addlog({
           event: 'havedata'
         });
         window.data_loaded_time = Date.now();
-        self.$$('#showifnoext').style.display = 'none';
-        self.$$('#showifrequestdata').style.display = 'none';
-        self.$$('#showifloading').style.display = 'none';
-        self.$$('#showifhavedata').style.display = '';
-        end_spinner();
-        res$ = [];
-        for (k in ref$ = results.detail.chrome_history_timespent_domain) {
-          v = ref$[k];
-          res$.push([k, v]);
-        }
-        data = res$;
-        top_sites = prelude.map(function(it){
-          return it[0];
-        })(
-        prelude.take(40)(
-        prelude.reverse(
-        prelude.sortBy(function(it){
-          return it[1];
-        }, data))));
-        console.log(top_sites);
-        return self.$$('#ratedomains').domains = top_sites;
-      });
+        data = {
+          autofill: results.detail,
+          surveyname: 'boredomproneness1data',
+          time: Date.now(),
+          localtime: new Date().toString(),
+          initial_page_loaded_time: window.initial_page_loaded_time,
+          extension_loaded_time: window.extension_loaded_time,
+          data_loaded_time: window.data_loaded_time,
+          username: window.username,
+          userid: window.userid,
+          client_ip_address: window.client_ip_address
+        };
+        console.log('compressing data');
+        compressed_data = LZString.compressToEncodedURIComponent(JSON.stringify(data));
+        console.log('posting data');
+        return $.ajax({
+          type: 'POST',
+          url: '/logsurvey_compressed',
+          contentType: 'text/plain',
+          data: compressed_data,
+          error: function(err){
+            console.log('have error');
+            console.log(err);
+            end_spinner();
+            swal('An error occurred while fetching browsing history ' + JSON.stringify(err));
+            addlog({
+              event: 'submitsurvey_error'
+            });
+            return addlog({
+              event: 'submitsurvey_error_detailed',
+              err: err
+            });
+          },
+          complete: function(){
+            var data, res$, k, ref$, v, top_sites;
+            end_spinner();
+            addlog({
+              event: 'postdata_complete'
+            });
+            self.$$('#showifnoext').style.display = 'none';
+            self.$$('#showifrequestdata').style.display = 'none';
+            self.$$('#showifloading').style.display = 'none';
+            self.$$('#showifhavedata').style.display = '';
+            end_spinner();
+            res$ = [];
+            for (k in ref$ = results.detail.chrome_history_timespent_domain) {
+              v = ref$[k];
+              res$.push([k, v]);
+            }
+            data = res$;
+            top_sites = prelude.map(function(it){
+              return it[0];
+            })(
+            prelude.take(40)(
+            prelude.reverse(
+            prelude.sortBy(function(it){
+              return it[1];
+            }, data))));
+            console.log(top_sites);
+            return self.$$('#ratedomains').domains = top_sites;
+          }
+        });
+      }, 0);
     },
     installextension: function(){
       var url, successCallback;
@@ -121,14 +162,13 @@
       return setTimeout(function(){
         var data, compressed_data;
         data = {
-          autofill: self.$$('#autofill').data,
           notes: self.$$('#notes').value,
           occupation: occupation,
           hobbies: hobbies,
           classifications: classifications,
           sssv_questions: sssv_questions,
           answers: answers,
-          surveyname: 'sensationseeking1',
+          surveyname: 'boredomproneness1survey',
           time: Date.now(),
           localtime: new Date().toString(),
           initial_page_loaded_time: window.initial_page_loaded_time,
