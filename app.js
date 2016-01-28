@@ -1,9 +1,10 @@
 (function(){
-  var express, https, fs, forceSsl, LZString, MongoClient, mongourl, ref$, app, https_options, selfSignedHttps, getMongoDb, getCollection, addlog, logsurvey;
+  var express, https, fs, forceSsl, requestIp, LZString, MongoClient, mongourl, ref$, app, https_options, selfSignedHttps, hasusernamecompleted, hasuseridcompleted, addcompletioncode, getMongoDb, getCollection, addlog, logsurvey;
   express = require('express');
   https = require('https');
   fs = require('fs');
   forceSsl = require('force-ssl');
+  requestIp = require('request-ip');
   LZString = require('lz-string');
   MongoClient = require('mongodb').MongoClient;
   mongourl = (ref$ = process.env.MONGOHQ_URL) != null
@@ -65,6 +66,85 @@
       return res.send('done');
     });
   });
+  app.get('/get_ip_address.js', function(req, res){
+    res.set('Content-Type', 'text/javascript');
+    return res.send('window.client_ip_address = "' + requestIp.getClientIp(req) + '";');
+  });
+  app.get('/hasuseridcompleted', function(req, res){
+    var userid;
+    userid = req.body;
+    return hasuseridcompleted(userid, function(yesorno){
+      res.set('Content-Type', 'text/javascript');
+      if (yesorno) {
+        return res.send('has_userid_completed(true);');
+      } else {
+        return res.send('has_userid_completed(false);');
+      }
+    });
+  });
+  app.get('/hasusernamecompleted', function(req, res){
+    var username;
+    username = req.body;
+    return hasusernamecompleted(username, function(yesorno){
+      res.set('Content-Type', 'text/javascript');
+      if (yesorno) {
+        return res.send('has_username_completed(true);');
+      } else {
+        return res.send('has_username_completed(false);');
+      }
+    });
+  });
+  app.post('/addcompletioncode', function(req, res){
+    var data;
+    data = req.body;
+    if (typeof data === 'string') {
+      data = JSON.parse(data);
+    }
+    return addcompletioncode(data, function(){
+      return res.send('done');
+    });
+  });
+  hasusernamecompleted = function(username, callback){
+    return getCollection('completioncodes', function(collection, db){
+      return collection.findOne({
+        username: username
+      }, function(err, doc){
+        if (doc != null) {
+          return callback(true);
+        } else {
+          return callback(false);
+        }
+      });
+    });
+  };
+  hasuseridcompleted = function(userid, callback){
+    return getCollection('completioncodes', function(collection, db){
+      return collection.findOne({
+        userid: userid
+      }, function(err, doc){
+        if (doc != null) {
+          return callback(true);
+        } else {
+          return callback(false);
+        }
+      });
+    });
+  };
+  addcompletioncode = function(data, callback){
+    return getCollection('completioncodes', function(collection, db){
+      return collection.insert(data, function(err, docs){
+        if (err != null) {
+          console.log('error upon insertion');
+          console.log(err);
+        } else {
+          if (callback != null) {
+            callback();
+          }
+        }
+        return db.close();
+      });
+    });
+  };
   /*
   app.post '/logsurvey', (req, res) ->
     data = req.body
@@ -132,9 +212,7 @@
   };
   addlog = function(data, callback){
     return getCollection('logs', function(collection, db){
-      return collection.insert({
-        data: data_compressed
-      }, function(err, docs){
+      return collection.insert(data, function(err, docs){
         if (err != null) {
           console.log('error upon insertion');
           console.log(err);

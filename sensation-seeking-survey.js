@@ -4,6 +4,9 @@
     extensionloaded: function(){
       var self;
       self = this;
+      addlog({
+        event: 'extensionloaded'
+      });
       window.extension_loaded_time = Date.now();
       console.log('extension loaded in sensation-seeking-survey');
       self.$$('#showifnoext').style.display = 'none';
@@ -15,8 +18,14 @@
       window.initial_page_loaded_time = Date.now();
       self = this;
       this.$$('#autofill').fields = "chrome_history_timespent_domain,chrome_history_pages,chrome_history_visits";
+      addlog({
+        event: 'pageload'
+      });
       return this.$$('#autofill').addEventListener('have-data', function(results){
         var data, res$, k, ref$, v, top_sites;
+        addlog({
+          event: 'havedata'
+        });
         window.data_loaded_time = Date.now();
         self.$$('#showifnoext').style.display = 'none';
         self.$$('#showifrequestdata').style.display = 'none';
@@ -44,7 +53,13 @@
     installextension: function(){
       var url, successCallback;
       if ((typeof chrome != 'undefined' && chrome !== null) && chrome.webstore != null && chrome.webstore.install != null) {
+        addlog({
+          event: 'extension_install_start'
+        });
         return chrome.webstore.install(url = 'https://chrome.google.com/webstore/detail/mogonddkdjlindkbpkagjfkbckgjjmem', successCallback = function(){
+          addlog({
+            event: 'extension_install_finish'
+          });
           console.log('extension install finished');
           return window.location.reload();
         });
@@ -60,16 +75,29 @@
       if (!(window.skipchecks != null && window.skipchecks)) {
         if (occupation == null || occupation === '') {
           swal('Please fill out your occupation');
+          addlog({
+            event: 'submitsurvey_incomplete',
+            missing: 'occupation'
+          });
           return;
         }
         if (hobbies == null || hobbies === '') {
           swal('Please fill out your hobbies');
+          addlog({
+            event: 'submitsurvey_incomplete',
+            missing: 'hobbies'
+          });
           return;
         }
         for (k in classifications) {
           v = classifications[k];
           if (v === null) {
             swal('Please indicate the primary reason you visit ' + k);
+            addlog({
+              event: 'submitsurvey_incomplete',
+              missing: 'website_classifications',
+              classifications: classifications
+            });
             return;
           }
         }
@@ -77,10 +105,18 @@
           v = answers[k];
           if (v === null) {
             swal('Please answer survey question ' + (parseInt(k) + 1));
+            addlog({
+              event: 'submitsurvey_incomplete',
+              missing: 'survey_question',
+              answers: answers
+            });
             return;
           }
         }
       }
+      addlog({
+        event: 'submitsurvey_start'
+      });
       start_spinner();
       return setTimeout(function(){
         var data, compressed_data;
@@ -99,8 +135,10 @@
           extension_loaded_time: window.extension_loaded_time,
           data_loaded_time: window.data_loaded_time,
           username: window.username,
-          userid: window.userid
+          userid: window.userid,
+          client_ip_address: window.client_ip_address
         };
+        addcompletioncode();
         console.log('compressing data');
         compressed_data = LZString.compressToEncodedURIComponent(JSON.stringify(data));
         console.log('posting data');
@@ -113,13 +151,21 @@
             console.log('have error');
             console.log(err);
             end_spinner();
-            return swal(err);
+            swal(err);
+            addlog({
+              event: 'submitsurvey_error'
+            });
+            return addlog({
+              event: 'submitsurvey_error_detailed',
+              err: err
+            });
           },
-          complete: function(a){
+          complete: function(){
             end_spinner();
-            console.log(a);
-            console.log('finished posting survey results');
-            return swal('finished posting survey results. thanks for participating');
+            swal('thanks for participating. your completion code is ' + window.userid);
+            return addlog({
+              event: 'submitsurvey_complete'
+            });
           }
         });
       }, 0);

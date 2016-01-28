@@ -3,6 +3,7 @@ require! {
   https
   fs
   'force-ssl'
+  'request-ip'
 }
 
 LZString = require 'lz-string'
@@ -60,6 +61,62 @@ app.post '/addlog', (req, res) ->
     data = JSON.parse data
   addlog data, ->
     res.send 'done'
+
+app.get '/get_ip_address.js', (req, res) ->
+  res.set 'Content-Type', 'text/javascript'
+  res.send 'window.client_ip_address = "' + requestIp.getClientIp(req) + '";'
+
+app.get '/hasuseridcompleted', (req, res) ->
+  userid = req.body
+  hasuseridcompleted userid, (yesorno) ->
+    res.set 'Content-Type', 'text/javascript'
+    if yesorno
+      res.send 'has_userid_completed(true);'
+    else
+      res.send 'has_userid_completed(false);'
+
+app.get '/hasusernamecompleted', (req, res) ->
+  username = req.body
+  hasusernamecompleted username, (yesorno) ->
+    res.set 'Content-Type', 'text/javascript'
+    if yesorno
+      res.send 'has_username_completed(true);'
+    else
+      res.send 'has_username_completed(false);'
+
+app.post '/addcompletioncode', (req, res) ->
+  data = req.body
+  if typeof(data) == 'string'
+    data = JSON.parse data
+  addcompletioncode data, ->
+    res.send 'done'
+
+hasusernamecompleted = (username, callback) ->
+  get-collection 'completioncodes', (collection, db) ->
+    collection.findOne {username: username}, (err, doc) ->
+      if doc?
+        callback(true)
+      else
+        callback(false)
+
+hasuseridcompleted = (userid, callback) ->
+  get-collection 'completioncodes', (collection, db) ->
+    collection.findOne {userid: userid}, (err, doc) ->
+      if doc?
+        callback(true)
+      else
+        callback(false)
+
+addcompletioncode = (data, callback) ->
+  get-collection 'completioncodes', (collection, db) ->
+    collection.insert data, (err, docs) ->
+      if err?
+        console.log 'error upon insertion'
+        console.log err
+      else
+        if callback?
+          callback()
+      db.close()
 
 /*
 app.post '/logsurvey', (req, res) ->
@@ -122,7 +179,7 @@ get-collection = (collection_name, callback) ->
 
 addlog = (data, callback) ->
   get-collection 'logs', (collection, db) ->
-    collection.insert {data: data_compressed}, (err, docs) ->
+    collection.insert data, (err, docs) ->
       if err?
         console.log 'error upon insertion'
         console.log err

@@ -1,5 +1,5 @@
 (function(){
-  var open_page, open_survey, return_home, view_data, start_spinner, end_spinner, addlog, out$ = typeof exports != 'undefined' && exports || this;
+  var open_page, open_survey, return_home, view_data, start_spinner, end_spinner, addlog, addcompletioncode, out$ = typeof exports != 'undefined' && exports || this;
   out$.open_page = open_page = function(page_name, options){
     var newpage, k, v;
     newpage = $("<" + page_name + ">");
@@ -41,8 +41,28 @@
     if (window.userid != null) {
       data.userid = window.userid;
     }
+    if (window.client_ip_address != null) {
+      data.client_ip_address = window.client_ip_address;
+    }
     data.time = Date.now();
-    return data.localtime = new Date().toString();
+    data.localtime = new Date().toString();
+    return $.ajax({
+      type: 'POST',
+      url: '/addlog',
+      contentType: 'text/plain',
+      data: JSON.stringify(data)
+    });
+  };
+  out$.addcompletioncode = addcompletioncode = function(){
+    return $.ajax({
+      type: 'POST',
+      url: '/addcompletioncode',
+      contentType: 'text/plain',
+      data: JSON.stringify({
+        userid: window.userid,
+        username: window.username
+      })
+    });
   };
   function import$(obj, src){
     var own = {}.hasOwnProperty;

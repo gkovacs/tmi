@@ -1,0 +1,55 @@
+<!-- For help on using this template, see the blog post: http://mechanicalturk.typepad.com/blog/2014/04/editing-the-survey-link-project-template-in-the-ui.html --><!-- Bootstrap v3.0.3 -->
+<link href="https://s3.amazonaws.com/mturk-public/bs30/css/bootstrap.min.css" rel="stylesheet" />
+<section class="container" id="SurveyLink" style="margin-bottom:15px; padding: 10px 10px; font-family: Verdana, Geneva, sans-serif; color:#333333; font-size:0.9em;">
+<div class="row col-xs-12 col-md-12"><!-- Instructions -->
+<div class="panel panel-primary">
+<div class="panel-heading"><strong>Instructions</strong></div>
+
+<div class="panel-body">
+<p>We are conducting an academic survey about browsing behavior and personality. In this study, we are looking to see if we can predict your personality based on your browsing patterns. You must do this survey in Chrome.<br />
+You will first install a Chrome extension that will look at which sites you spend the most time on, and ask you some questions about how you use those sites. Then you will answer some general personality-related questions. The questions will take about 10 minutes to answer total.<br />
+(The mechanical turk <a href="https://www.mturk.com/mturk/conditionsofuse" target="_blank">terms of service</a> permit HITs that require software so long as it is not harmful. The extension is <a href="https://github.com/gkovacs/tmi" target="_blank">open-source</a> and the results will be shared with only the Stanford HCI Research Group. You can uninstall the extension once you are done with this HIT.)<br />
+If you have any questions or issues, you can contact geza@cs.stanford.edu</p>
+
+<p><strong>Make sure to leave this window open as you complete the survey. </strong>When you are finished, you will return to this page to paste the code into the box.</p>
+</div>
+</div>
+<!-- End Instruction -->
+
+<table>
+  <tbody>
+    <tr>
+      <td><strong>Survey link:</strong></td>
+      <td><a id="surveylink" target="_blank">Please accept the HIT before starting the survey</a></td>
+    </tr>
+    <tr>
+      <td><strong>Provide the survey code here:</strong></td>
+      <td style="vertical-align: middle;"><input class="form-control" id="surveycode" name="surveycode" placeholder="e.g. 123456" type="text" /></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</section>
+<!-- close container section -->
+<style type="text/css">td { font-size:1.0em; padding:5px 5px; }
+</style>
+<script>
+function getParamFromURL( name )
+{
+  name = name.replace(/[\[]/,"\\[").replace(/[\]]/,"\\]");
+  var regexS = "[\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( window.location.href );
+  if( results == null )
+    return "";
+  else
+    return results[1];
+}
+
+workerid=getParamFromURL('workerId');
+if (workerid) {
+surveylink='https://tmi.stanford.edu/mturk1.html?username=' + workerid;
+document.getElementById('surveylink').href=surveylink
+document.getElementById('surveylink').innerText=surveylink
+}
+</script>

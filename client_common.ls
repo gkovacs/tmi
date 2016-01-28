@@ -34,7 +34,21 @@ export addlog = (data) ->
     data.username = window.username
   if window.userid?
     data.userid = window.userid
+  if window.client_ip_address?
+    data.client_ip_address = window.client_ip_address
   data.time = Date.now()
   data.localtime = new Date().toString()
-  # ip address
-  # post the request
+  $.ajax {
+    type: 'POST'
+    url: '/addlog'
+    contentType: 'text/plain'
+    data: JSON.stringify(data)
+  }
+
+export addcompletioncode = ->
+  $.ajax {
+    type: 'POST'
+    url: '/addcompletioncode'
+    contentType: 'text/plain'
+    data: JSON.stringify({userid: window.userid, username: window.username})
+  }
