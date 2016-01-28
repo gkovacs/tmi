@@ -1,0 +1,26 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="exp-description.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="experiment-button.html">
+
+<dom-module id="boredom-proneness-scale">
+  <style>
+  </style>
+  <template>
+    <!--<h3>Sensation Seeking Scale Form V</h3>-->
+    <h3>Survey Questions</h3>
+<p><b>Directions</b>: For each of the questions below, please answer either True if you agree with the statement, or False if you disagree with the statement.</p>
+    <br>
+    <template is="dom-repeat" items="{{sssv_questions}}">
+    <div>
+      <div><span>{{plusone(index)}}</span><span>) <span>{{item}}</span></span></div>
+      <paper-radio-group qidx="{{index}}" atext="{{item}}" qclass="{{getqclass(index)}}" highchoice="{{gethighchoice(index)}}" on-paper-radio-group-changed="radioGroupChanged">
+        <paper-radio-button name="T">True</paper-radio-button><br>
+        <paper-radio-button name="F">False</paper-radio-button>
+      </paper-radio-group>
+    </div>
+    <br>
+    </template>
+  </template>
+  <script src="boredom-proneness-scale.js"></script>
+</dom-module>

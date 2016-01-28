@@ -166,27 +166,21 @@
         res.send JSON.stringify(results)
         db.close()
   */
-  app.get('/listsurvey', function(req, res){
-    var surveyname;
-    surveyname = req.query.surveyname;
-    if (surveyname == null) {
-      res.send('need surveyname param');
-      return;
-    }
-    return getCollection(surveyname, function(collection, db){
-      return collection.find({}).toArray(function(err, results){
-        var output, i$, len$, data;
-        output = [];
-        for (i$ = 0, len$ = results.length; i$ < len$; ++i$) {
-          data = results[i$].data;
-          output.push(JSON.parse(LZString.decompressFromEncodedURIComponent(data)));
-        }
-        res.set('Content-Type', 'text/plain');
-        res.send(JSON.stringify(output, null, 2));
-        return db.close();
-      });
-    });
-  });
+  /*
+  app.get '/listsurvey', (req, res) ->
+    {surveyname} = req.query
+    if not surveyname?
+      res.send 'need surveyname param'
+      return
+    get-collection surveyname, (collection, db) ->
+      collection.find({}).toArray (err, results) ->
+        output = []
+        for {data} in results
+          output.push JSON.parse LZString.decompressFromEncodedURIComponent(data)
+        res.set 'Content-Type', 'text/plain'
+        res.send JSON.stringify(output, null, 2)
+        db.close()
+  */
   app.get('/viewlogs', function(req, res){
     return getCollection('logs', function(collection, db){
       return collection.find({}).toArray(function(err, results){

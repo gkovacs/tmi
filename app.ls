@@ -140,6 +140,7 @@ app.get '/listsurvey', (req, res) ->
       db.close()
 */
 
+/*
 app.get '/listsurvey', (req, res) ->
   {surveyname} = req.query
   if not surveyname?
@@ -153,6 +154,7 @@ app.get '/listsurvey', (req, res) ->
       res.set 'Content-Type', 'text/plain'
       res.send JSON.stringify(output, null, 2)
       db.close()
+*/
 
 app.get '/viewlogs', (req, res) ->
   get-collection 'logs', (collection, db) ->
