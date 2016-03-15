@@ -1,0 +1,41 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="exp-description.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="experiment-button.html">
+
+<dom-module id="data-collection-survey">
+  <style>
+  </style>
+  <template>
+  <div style="margin-left: 10px">
+    <div id="showifnoext">
+    <b>You must be using Google Chrome to do this study. Please do NOT do this study if you have recently cleared your browsing history, or if this is not the computer and web browser you use for your everyday browsing activity.</b>
+    <br><br>
+    In this study, we are looking to see if we can predict your personality based on your browsing patterns. You will first install a Chrome extension that will look at which sites you spend the most time on, and ask you some questions about how you use those sites. Then you will answer some general personality-related questions. The questions will take 10-20 minutes to answer total.
+    <br><br>
+    To begin, please install our extension. The extension is <a href="https://github.com/gkovacs/tmi">open-source</a> and will not share data without your consent. Your data will only be used for research by the <a href="http://hci.stanford.edu/">Stanford HCI Research Group</a> and will not be shared with other parties. You can uninstall the extension once you submit the HIT.
+    <br><br>
+    <!-- This extension enables you to share your browsing history with our site so that you can do our study and get paid.<br> -->
+    <paper-button raised style="background: #4285f4; color: #fff" on-click="installextension">Install the TMI Extension</paper-button>
+    </div>
+    <div id="showifrequestdata" style="display: none">
+    Loading survey, please wait (can take up to a minute).
+    </div>
+    <div id="showifloading" style="display: none">
+    Loading, please wait this can take up to a minute
+    </div>
+    <div id="showifhavedata" style="display: none">
+      <autofill-data2 id="autofill" on-extension-loaded="extensionloaded" pagename="Boredom Proneness Survey"></autofill-data>
+      <!--<slacking-website-use id="ratedomains"></slacking-website-use>-->
+      <!--<recreational-website-use id="ratedomains"></recreational-website-use>-->
+      <!--<unplanned-media-consumption id="ratedomains"></unplanned-media-consumption>-->
+      <productive-hobby-website-use id="ratedomains"></productive-hobby-website-use>
+      <boredom-proneness-scale id="surveyquestions"></boredom-proneness-scale>
+      <paper-input label="Any notes or comments?" name="notes" id="notes"></paper-input>
+      <paper-button raised style="background: #4285f4; color: #fff" on-click="submitsurvey">Submit</paper-button>
+    </div>
+  </div>
+  </template>
+  <script src="data-collection-survey.js"></script>
+</dom-module>
