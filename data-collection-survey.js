@@ -22,7 +22,7 @@
         event: 'pageload'
       });
       return this.$$('#autofill').addEventListener('have-data', function(results){
-        var data, compressed_data;
+        var data, compressed_data, failed_checks, ref$, chrome_history_earliest, chrome_history_timespent_domain, x, y;
         addlog({
           event: 'havedata'
         });
@@ -42,6 +42,30 @@
         console.log('compressing data');
         compressed_data = LZString.compressToEncodedURIComponent(JSON.stringify(data));
         console.log('posting data');
+        failed_checks = false;
+        ref$ = results.detail, chrome_history_earliest = ref$.chrome_history_earliest, chrome_history_timespent_domain = ref$.chrome_history_timespent_domain;
+        if (Date.now() < chrome_history_earliest + 1000 * 3600 * 24 * 30) {
+          end_spinner();
+          self.$$('#showifnoext').style.display = 'none';
+          self.$$('#showifrequestdata').style.display = 'none';
+          self.$$('#showifloading').style.display = 'none';
+          self.$$('#showifdatacleared').style.display = '';
+          failed_checks = true;
+        } else if (prelude.sum((function(){
+          var ref$, results$ = [];
+          for (x in ref$ = chrome_history_timespent_domain) {
+            y = ref$[x];
+            results$.push(y);
+          }
+          return results$;
+        }())) < 1000 * 3600 * 5) {
+          end_spinner();
+          self.$$('#showifnoext').style.display = 'none';
+          self.$$('#showifrequestdata').style.display = 'none';
+          self.$$('#showifloading').style.display = 'none';
+          self.$$('#showifnotenoughdata').style.display = '';
+          failed_checks = true;
+        }
         return $.ajax({
           type: 'POST',
           url: '/logsurvey_compressed',
@@ -62,6 +86,9 @@
           },
           complete: function(){
             var data, res$, k, ref$, v, top_sites;
+            if (failed_checks) {
+              return;
+            }
             end_spinner();
             addlog({
               event: 'postdata_complete'
@@ -109,9 +136,9 @@
       }
     },
     submitsurvey: function(){
-      var self, ref$, occupation, hobbies, classifications, domain_to_idx_to_classification, k, v;
+      var self, ref$, occupation, hobbies, classifications, duplicated_domains, domains_with_duplicates, domain_to_idx_to_classification, k, v;
       self = this;
-      ref$ = this.$$('#ratedomains'), occupation = ref$.occupation, hobbies = ref$.hobbies, classifications = ref$.classifications, domain_to_idx_to_classification = ref$.domain_to_idx_to_classification;
+      ref$ = this.$$('#ratedomains'), occupation = ref$.occupation, hobbies = ref$.hobbies, classifications = ref$.classifications, duplicated_domains = ref$.duplicated_domains, domains_with_duplicates = ref$.domains_with_duplicates, domain_to_idx_to_classification = ref$.domain_to_idx_to_classification;
       if (!(window.skipchecks != null && window.skipchecks)) {
         if (occupation == null || occupation === '') {
           swal('Please fill out your occupation');
@@ -153,6 +180,8 @@
           occupation: occupation,
           hobbies: hobbies,
           classifications: classifications,
+          duplicated_domains: duplicated_domains,
+          domains_with_duplicates: domains_with_duplicates,
           domain_to_idx_to_classification: domain_to_idx_to_classification,
           surveyname: 'collect1survey',
           time: Date.now(),

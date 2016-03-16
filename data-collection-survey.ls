@@ -36,6 +36,22 @@ Polymer {
       console.log 'compressing data'
       compressed_data = LZString.compressToEncodedURIComponent JSON.stringify data
       console.log 'posting data'
+      failed_checks = false
+      {chrome_history_earliest, chrome_history_timespent_domain} = results.detail
+      if Date.now() < (chrome_history_earliest + 1000*3600*24*30)
+        end_spinner()
+        self.$$('#showifnoext').style.display = 'none'
+        self.$$('#showifrequestdata').style.display = 'none'
+        self.$$('#showifloading').style.display = 'none'
+        self.$$('#showifdatacleared').style.display = ''
+        failed_checks = true
+      else if prelude.sum([y for x,y of chrome_history_timespent_domain]) < 1000*3600*5
+        end_spinner()
+        self.$$('#showifnoext').style.display = 'none'
+        self.$$('#showifrequestdata').style.display = 'none'
+        self.$$('#showifloading').style.display = 'none'
+        self.$$('#showifnotenoughdata').style.display = ''
+        failed_checks = true
       $.ajax {
         type: 'POST'
         url: '/logsurvey_compressed'
@@ -52,6 +68,8 @@ Polymer {
           addlog {event: 'submitsurvey_error'}
           addlog {event: 'submitsurvey_error_detailed', err}
         complete: ->
+          if failed_checks
+            return
           end_spinner()
           #console.log a
           #console.log 'finished posting survey results'
@@ -87,7 +105,7 @@ Polymer {
       window.open('https://chrome.google.com/webstore/detail/gfbpfpdbpplbgahmeljkmbbmnbplkdif')
   submitsurvey: ->
     self = this
-    {occupation, hobbies, classifications, domain_to_idx_to_classification} = this.$$('#ratedomains')
+    {occupation, hobbies, classifications, duplicated_domains, domains_with_duplicates, domain_to_idx_to_classification} = this.$$('#ratedomains')
     # {sssv_questions, answers} = this.$$('#surveyquestions')
     if not (window.skipchecks? and window.skipchecks)
       if not occupation? or occupation == ''
@@ -117,6 +135,8 @@ Polymer {
         occupation
         hobbies
         classifications
+        duplicated_domains
+        domains_with_duplicates
         domain_to_idx_to_classification
         #sssv_questions
         #answers
