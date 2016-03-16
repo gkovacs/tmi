@@ -55,11 +55,13 @@ if (workerid) {
 
   if (ineligible) {
     alert('Sorry you have already participated in a similar HIT so you are ineligible to do this one')
-    documet.getElementById('SurveyLink').innerText = 'Sorry you have already participated in a similar HIT so you are ineligible to do this one'
+    document.getElementById('SurveyLink').innerText = 'Sorry you have already participated in a similar HIT so you are ineligible to do this one'
+    document.getElementById('SurveyLink').innerHTML = 'Sorry you have already participated in a similar HIT so you are ineligible to do this one'
   } else {
-    surveylink='https://tmi.stanford.edu/mturk3.html?username=' + workerid;
-    document.getElementById('surveylink').href=surveylink
-    document.getElementById('surveylink').innerText=surveylink
+    var surveylink='https://tmi.stanford.edu/mturk3.html?username=' + workerid;
+    document.getElementById('surveylink').href=surveylink;
+    document.getElementById('surveylink').innerText=surveylink;
+    document.getElementById('surveylink').innerHTML=surveylink;
   }
 }
 </script>
