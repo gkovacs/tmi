@@ -1,0 +1,34 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="exp-description.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="experiment-button.html">
+
+<dom-module id="productive-hobby-website-use2">
+  <style>
+  </style>
+  <template>
+    <h3>Survey: Website Use</h3>
+    <!--
+    <p>What is your occupation/job/what are you studying?</p><br>
+    <p>What are your primary hobbies/organizations/extracurricular activities?</p><br>
+    -->
+    <p><b>Directions</b>: Please fill out the survey below and submit it. It should take about 10 minutes total to complete.</p>
+    <paper-input label="What is your occupation, or what do you study?" name="occupation" on-change="occupationChanged"></paper-input>
+    <paper-input label="What are your primary hobbies and extracurricular activities?" name="hobbies" on-change="hobbiesChanged"></paper-input>
+    <br><br>
+    <p>These are the sites that you visit the most. For each site, please indicate whether you use it <b>primarily</b> for purposes related to work/studying, for hobbies/extracurriculars, for fun and time-wasting, or for other purposes (ie, errands and shopping).</p><br>
+    <template is="dom-repeat" items="{{domains_with_duplicates}}">
+    <div>
+      <div>{{item}}</div>
+      <paper-radio-group idx="{{index}}" sitename="{{item}}" on-paper-radio-group-changed="radioGroupChanged">
+        <paper-radio-button class="workradio" name="work">Work/Studying</paper-radio-button><span class="worksupp"></span><br>
+        <paper-radio-button class="hobbyradio" name="hobby">Hobby/Extracurricular</paper-radio-button><span class="hobbysupp"></span><br>
+        <paper-radio-button class="funradio" name="fun">Fun/Time-wasting</paper-radio-button><br>
+        <paper-radio-button class="otherradio" name="other">Other</paper-radio-button>        
+      </paper-radio-group>
+    </div><br>
+    </template>
+  </template>
+  <script src="productive-hobby-website-use2.js"></script>
+</dom-module>

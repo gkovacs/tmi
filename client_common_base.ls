@@ -18,3 +18,16 @@ export once_available = (selector, callback) ->
     setTimeout ->
       once_available selector, callback
     , 1000
+
+# Randomizes the order of elements in the passed in array in place.
+export shuffle_array = (arr) ->
+  i = arr.length
+  if i == 0
+    return false
+  while --i
+    j = Math.floor(Math.random() * (i+1))
+    tempi = arr[i]
+    tempj = arr[j]
+    arr[i] = tempj
+    arr[j] = tempi
+  return arr

@@ -87,8 +87,8 @@ Polymer {
       window.open('https://chrome.google.com/webstore/detail/gfbpfpdbpplbgahmeljkmbbmnbplkdif')
   submitsurvey: ->
     self = this
-    {occupation, hobbies, classifications} = this.$$('#ratedomains')
-    {sssv_questions, answers} = this.$$('#surveyquestions')
+    {occupation, hobbies, classifications, domain_to_idx_to_classification} = this.$$('#ratedomains')
+    # {sssv_questions, answers} = this.$$('#surveyquestions')
     if not (window.skipchecks? and window.skipchecks)
       if not occupation? or occupation == ''
         swal 'Please fill out your occupation'
@@ -103,11 +103,11 @@ Polymer {
           swal 'Please indicate the primary reason you visit ' + k
           addlog {event: 'submitsurvey_incomplete', missing: 'website_classifications', classifications}
           return
-      for k,v of answers
-        if v == null
-          swal 'Please answer survey question ' + (parseInt(k)+1)
-          addlog {event: 'submitsurvey_incomplete', missing: 'survey_question', answers}
-          return
+      #for k,v of answers
+      #  if v == null
+      #    swal 'Please answer survey question ' + (parseInt(k)+1)
+      #    addlog {event: 'submitsurvey_incomplete', missing: 'survey_question', answers}
+      #    return
     addlog {event: 'submitsurvey_start'}
     start_spinner()
     setTimeout ->
@@ -117,8 +117,9 @@ Polymer {
         occupation
         hobbies
         classifications
-        sssv_questions
-        answers
+        domain_to_idx_to_classification
+        #sssv_questions
+        #answers
         surveyname: 'collect1survey'
         time: Date.now()
         localtime: new Date().toString()

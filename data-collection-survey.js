@@ -109,10 +109,9 @@
       }
     },
     submitsurvey: function(){
-      var self, ref$, occupation, hobbies, classifications, sssv_questions, answers, k, v;
+      var self, ref$, occupation, hobbies, classifications, domain_to_idx_to_classification, k, v;
       self = this;
-      ref$ = this.$$('#ratedomains'), occupation = ref$.occupation, hobbies = ref$.hobbies, classifications = ref$.classifications;
-      ref$ = this.$$('#surveyquestions'), sssv_questions = ref$.sssv_questions, answers = ref$.answers;
+      ref$ = this.$$('#ratedomains'), occupation = ref$.occupation, hobbies = ref$.hobbies, classifications = ref$.classifications, domain_to_idx_to_classification = ref$.domain_to_idx_to_classification;
       if (!(window.skipchecks != null && window.skipchecks)) {
         if (occupation == null || occupation === '') {
           swal('Please fill out your occupation');
@@ -142,18 +141,6 @@
             return;
           }
         }
-        for (k in answers) {
-          v = answers[k];
-          if (v === null) {
-            swal('Please answer survey question ' + (parseInt(k) + 1));
-            addlog({
-              event: 'submitsurvey_incomplete',
-              missing: 'survey_question',
-              answers: answers
-            });
-            return;
-          }
-        }
       }
       addlog({
         event: 'submitsurvey_start'
@@ -166,8 +153,7 @@
           occupation: occupation,
           hobbies: hobbies,
           classifications: classifications,
-          sssv_questions: sssv_questions,
-          answers: answers,
+          domain_to_idx_to_classification: domain_to_idx_to_classification,
           surveyname: 'collect1survey',
           time: Date.now(),
           localtime: new Date().toString(),
