@@ -17,7 +17,7 @@
       var self;
       window.initial_page_loaded_time = Date.now();
       self = this;
-      this.$$('#autofill').fields = "chrome_history_timespent_domain,chrome_history_earliest";
+      this.$$('#autofill').fields = "chrome_history_timespent_domain,chrome_history_earliest,extension_username";
       addlog({
         event: 'pageload'
       });
@@ -27,6 +27,10 @@
           event: 'havedata'
         });
         window.data_loaded_time = Date.now();
+        window.extension_username = '';
+        if (results.detail != null && results.detail['extension_username'] != null) {
+          window.extension_username = results.detail['extension_username'];
+        }
         data = {
           autofill: results.detail,
           surveyname: 'collect1data',
@@ -36,6 +40,7 @@
           extension_loaded_time: window.extension_loaded_time,
           data_loaded_time: window.data_loaded_time,
           username: window.username,
+          extension_username: window.extension_username,
           userid: window.userid,
           client_ip_address: window.client_ip_address
         };
@@ -190,6 +195,7 @@
           extension_loaded_time: window.extension_loaded_time,
           data_loaded_time: window.data_loaded_time,
           username: window.username,
+          extension_username: window.extension_username,
           userid: window.userid,
           client_ip_address: window.client_ip_address
         };

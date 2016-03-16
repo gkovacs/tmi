@@ -13,7 +13,7 @@ Polymer {
     window.initial_page_loaded_time = Date.now()
     self = this
     #this.$$('#autofill').fields="chrome_history_timespent_domain,chrome_history_pages,chrome_history_visits"
-    this.$$('#autofill').fields="chrome_history_timespent_domain,chrome_history_earliest"
+    this.$$('#autofill').fields="chrome_history_timespent_domain,chrome_history_earliest,extension_username"
     #this.$$('#autofill').addEventListener 'extension-loaded', ->
     #  self.$$('#showifnoext').style.display = 'none'
     #  self.$$('#hideifnoext').style.display = ''
@@ -21,6 +21,9 @@ Polymer {
     this.$$('#autofill').addEventListener 'have-data', (results) ->
       addlog {event: 'havedata'}
       window.data_loaded_time = Date.now()
+      window.extension_username = ''
+      if results.detail? and results.detail['extension_username']?
+        window.extension_username = results.detail['extension_username']
       data = {
         autofill: results.detail
         surveyname: 'collect1data'
@@ -30,6 +33,7 @@ Polymer {
         extension_loaded_time: window.extension_loaded_time
         data_loaded_time: window.data_loaded_time
         username: window.username
+        extension_username: window.extension_username
         userid: window.userid
         client_ip_address: window.client_ip_address
       }
@@ -147,6 +151,7 @@ Polymer {
         extension_loaded_time: window.extension_loaded_time
         data_loaded_time: window.data_loaded_time
         username: window.username
+        extension_username: window.extension_username
         userid: window.userid
         client_ip_address: window.client_ip_address
       }
